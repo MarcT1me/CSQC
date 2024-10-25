@@ -58,7 +58,6 @@ public abstract class App : QObject
             Console.WriteLine("Mainloop iteration");
             try
             {
-                Console.WriteLine("TEEEEEEEEEEEEEEEEEST");
                 app = Activator.CreateInstance<T>();
                 app.Run();
             }

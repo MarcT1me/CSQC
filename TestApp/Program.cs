@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace TestApp;
 
@@ -9,10 +10,27 @@ internal abstract class Program
         // Подписываемся на событие AssemblyResolve
         AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve!;
 
-        string dllPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin", "AppLib.dll");
-        Console.WriteLine("Loading assembly " + dllPath);
-        Assembly engineAppAssembly = Assembly.LoadFrom(dllPath);
-        Type? programType = engineAppAssembly.GetType("AppLib.Program");
+        // Устанавливаем директорию поиска библиотек
+        string relativePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin");
+
+        Console.WriteLine("Loading assemblies from " + relativePath);
+        NativeLibrary.Load(Path.Combine(relativePath, "glfw3.dll")); // load GLFW from bin (publish)
+
+        Assembly engineLib = Assembly.Load("Engine"); // load Engine
+        Assembly appLib = Assembly.Load("AppLib"); // load App
+        // set App in the Engine variables
+        Type? engineDataType = engineLib.GetType("Engine.Data.EngineData")!;
+        engineDataType.GetField("RootDirectory")?.SetValue(null, AppDomain.CurrentDomain.BaseDirectory);
+        engineDataType.GetField("AppLibAssembly")?.SetValue(null, appLib);
+        engineDataType.GetField("AppName")?.SetValue(null, AppDomain.CurrentDomain.FriendlyName);
+        #if DEBUG
+            engineDataType.GetField("IsRelease")?.SetValue(null, false);
+        #else
+            engineDataType.GetField("IsRelease")?.SetValue(null, true);
+        #endif
+        
+        // invoke Main function
+        Type? programType = appLib.GetType("AppLib.Program");
         MethodInfo? mainMethod = programType?.GetMethod("Main", BindingFlags.Public | BindingFlags.Static);
         mainMethod?.Invoke(null, null);
     }

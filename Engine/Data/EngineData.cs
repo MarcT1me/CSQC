@@ -1,10 +1,12 @@
-﻿namespace Engine.Data;
+﻿using System.Reflection;
+
+namespace Engine.Data;
 
 public struct EngineData
 {
-    public static readonly string RootDirectory = Directory.GetCurrentDirectory();
+    public static string RootDirectory;
+    public static Assembly AppLibAssembly;
 
-    public static bool IsRelease = true;
-    public static string ProjectFolderName = "QuantumGame";
-    public static string AppName = "QuantumGame";
+    public static bool IsRelease;
+    public static string AppName;
 }

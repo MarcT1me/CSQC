@@ -10,11 +10,10 @@ public static class Program
 {
     public static void Main()
     {
-        EngineData.ProjectFolderName = "TestApp";
         EngineData.IsRelease = false;
 
         WinData.Size = new Vector2i(720, 480);
-        WinData.Title = EngineData.ProjectFolderName;
+        WinData.Title = EngineData.AppName;
         
         App.Mainloop<Game>();
     }

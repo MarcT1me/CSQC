@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Reflection;
+using Engine.Data;
 
 namespace Engine.Objects.Tracer;
 
@@ -8,8 +9,6 @@ public delegate object? Callback(string? id, params object[] args);
 [AttributeUsage(AttributeTargets.All)]
 public sealed class QTracerAttribute<T>(TraceType traceType) : Attribute where T : class
 {
-    private static readonly Assembly Assembly = Assembly.Load("AppLib");
-
     private void Handle(Type @class)
     {
         // if Flag not allow
@@ -56,7 +55,7 @@ public sealed class QTracerAttribute<T>(TraceType traceType) : Attribute where T
 
     public static void HandleInstances()
     {
-        var types = Assembly.GetTypes(); // get all classes
+        var types = EngineData.AppLibAssembly.GetTypes(); // get all classes
 
         foreach (var @class in types)
         {

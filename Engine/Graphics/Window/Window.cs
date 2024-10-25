@@ -66,7 +66,7 @@ public class Window : GameWindow
         }
         else if (KeyboardState.IsKeyDown(Keys.Space))
         {
-            var v = QObject.CallbackList["TestCall"].Invoke(null, "Hello Test!");
+            var v = QObject.CallbackList["TestCall"].Invoke(null, EngineData.AppName);
             Console.WriteLine(v);
         }
     }
