@@ -4,7 +4,7 @@ using Engine.Graphics.Window;
 using OpenTK.Mathematics;
 
 #pragma warning disable CS8500
-namespace AppCode;
+namespace AppLib;
 
 public static class Program
 {

@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Reflection;
-using Engine.Data;
 
 namespace Engine.Objects.Tracer;
 
@@ -9,7 +8,7 @@ public delegate object? Callback(string? id, params object[] args);
 [AttributeUsage(AttributeTargets.All)]
 public sealed class QTracerAttribute<T>(TraceType traceType) : Attribute where T : class
 {
-    private static readonly Assembly Assembly = Assembly.Load("AppCode");
+    private static readonly Assembly Assembly = Assembly.Load("AppLib");
 
     private void Handle(Type @class)
     {
@@ -21,7 +20,7 @@ public sealed class QTracerAttribute<T>(TraceType traceType) : Attribute where T
         )?.GetValue(null) as Dictionary<string, Type>;
 
         // if already exist
-        if ((bool)list?.TryGetValue(@class.Name, out Type _)) return;
+        if ((bool)list?.TryGetValue(@class.Name, out var _)) return;
 
         list.Add(@class.Name, @class);
     }
@@ -37,7 +36,7 @@ public sealed class QTracerAttribute<T>(TraceType traceType) : Attribute where T
         )?.GetValue(@class) as Dictionary<string, Callback>;
 
         // if already exist
-        if ((bool)list?.TryGetValue(method.Name, out Callback _)) return;
+        if ((bool)list?.TryGetValue(method.Name, out var _)) return;
 
         // adding Invoker
         list.Add(
@@ -62,22 +61,18 @@ public sealed class QTracerAttribute<T>(TraceType traceType) : Attribute where T
         foreach (var @class in types)
         {
             // get class attributes
-            object[] classAttributes = @class.GetCustomAttributes(typeof(QTracerAttribute<T>), false);
+            var classAttributes = @class.GetCustomAttributes(typeof(QTracerAttribute<T>), false);
 
-            foreach (var attr in classAttributes)
-            {
-                ((QTracerAttribute<T>)attr).Handle(@class); // Handle as class instance
-            }
+            foreach (var attr in
+                     classAttributes) ((QTracerAttribute<T>)attr).Handle(@class); // Handle as class instance
 
             foreach (var method in @class.GetMethods())
             {
                 // get method attributes
-                object[] methodAttributes = method.GetCustomAttributes(typeof(QTracerAttribute<T>), false);
+                var methodAttributes = method.GetCustomAttributes(typeof(QTracerAttribute<T>), false);
 
-                foreach (var attr in methodAttributes)
-                {
-                    ((QTracerAttribute<T>)attr).Handle(@class, method); // Handle as Callback
-                }
+                foreach (var attr in
+                         methodAttributes) ((QTracerAttribute<T>)attr).Handle(@class, method); // Handle as Callback
             }
         }
     }

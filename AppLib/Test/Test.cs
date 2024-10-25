@@ -2,7 +2,7 @@ using Engine.App;
 using Engine.Objects;
 using Engine.Objects.Tracer;
 
-namespace AppCode.Test;
+namespace AppLib.Test;
 
 [QTracer<App>(TraceType.Scan)]
 public class Test : QObject

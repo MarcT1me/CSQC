@@ -1,6 +1,6 @@
 using Engine.App;
 
-namespace AppCode;
+namespace AppLib;
 
 public class Game : App
 {

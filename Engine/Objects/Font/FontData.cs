@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
 
-namespace Engine.Graphics.Fonts;
+namespace Engine.Objects.Font;
 
 public struct FontData
 {

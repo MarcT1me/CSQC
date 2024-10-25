@@ -11,7 +11,7 @@ public abstract class QObject
 
     public QObject(string? id = null)
     {
-        this.QMeta = new QMeta(id);
+        QMeta = new QMeta(id);
     }
 
     public abstract void HandleEvent(int eventId);

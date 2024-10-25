@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppCode", "AppCode\AppCode.csproj", "{1AFA0727-94E6-4AF9-A576-A13DD8B59BE8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppLib", "AppLib\AppLib.csproj", "{1AFA0727-94E6-4AF9-A576-A13DD8B59BE8}"
 	ProjectSection(ProjectDependencies) = postProject
 		{6268E2C8-84A0-4247-96AC-ED5C565D4E7E} = {6268E2C8-84A0-4247-96AC-ED5C565D4E7E}
 	EndProjectSection

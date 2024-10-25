@@ -1,12 +1,13 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
-// engine
-using Engine.Data.Files.Localisation;
+﻿using Engine.Data.Files.Localisation;
 using Engine.Graphics.Shaders;
+using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
+
+// engine
 
 #pragma warning disable CS8500
 
-namespace Engine.Graphics.Fonts;
+namespace Engine.Graphics.Font;
 
 public class FontRenderer
 {
@@ -34,35 +35,35 @@ public class FontRenderer
     public void DrawPhrase(string name, LangData localisation, object[] parameters)
     {
         // ReSharper disable once NotAccessedVariable
-        FontData data = Font.List[name];
+        var data = Objects.Font.Font.List[name];
 
-         string text = String.Format(localisation.phrase[name], parameters);
+        var text = string.Format(localisation.phrase[name], parameters);
 
         data.Text = text;
-        Font.List[name] = data;
-        
-        _rendererShader.SetUniform(GL.Uniform4, "textColor", Font.List[name].Color);
-        Font.Fonts[data.Font].Render(name);
+        Objects.Font.Font.List[name] = data;
+
+        _rendererShader.SetUniform(GL.Uniform4, "textColor", Objects.Font.Font.List[name].Color);
+        Objects.Font.Font.Fonts[data.Font].Render(name);
     }
 
     public void Draw(string name, string text)
     {
         // ReSharper disable once NotAccessedVariable
-        FontData data = Font.List[name];
-        
+        var data = Objects.Font.Font.List[name];
+
         data.Text = text;
-        Font.List[name] = data;
-        
-        _rendererShader.SetUniform(GL.Uniform4, "textColor", Font.List[name].Color);
-        Font.Fonts[data.Font].Render(name);
+        Objects.Font.Font.List[name] = data;
+
+        _rendererShader.SetUniform(GL.Uniform4, "textColor", Objects.Font.Font.List[name].Color);
+        Objects.Font.Font.Fonts[data.Font].Render(name);
     }
 
     public void Draw(string name)
     {
-        FontData data = Font.List[name];
-        
-        _rendererShader.SetUniform(GL.Uniform4, "textColor", Font.List[name].Color);
-        Font.Fonts[data.Font].Render(name);
+        var data = Objects.Font.Font.List[name];
+
+        _rendererShader.SetUniform(GL.Uniform4, "textColor", Objects.Font.Font.List[name].Color);
+        Objects.Font.Font.Fonts[data.Font].Render(name);
         _rendererShader.Use(true);
     }
 

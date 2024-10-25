@@ -1,18 +1,19 @@
-﻿using OpenTK.Mathematics;
+﻿using Engine.Data.Files.Localisation;
+using Engine.Graphics.Font.FreeType;
+using OpenTK.Mathematics;
+
 // engine
-using Engine.Data.Files.Localisation;
-using Engine.Graphics.Fonts.FreeType;
 
 #pragma warning disable CS8500
 
-namespace Engine.Graphics.Fonts;
+namespace Engine.Objects.Font;
 
 public class Font : FreeTypeFont
 {
     public static Dictionary<string, Font> Fonts = new(); // list of Fonts
     public static Dictionary<string, FontData> List = new(); // list of Text lines
-    public readonly string Name; // Font name
     public static string Directory = @"C:\Windows\Fonts"; // current Font directory
+    public readonly string Name; // Font name
 
     public Font(string name, uint fontSize, string font, LangData lang, string? path = null)
         : base(fontSize, $"{path ?? Directory}\\" + font + ".ttf", lang.Range)
@@ -25,7 +26,7 @@ public class Font : FreeTypeFont
         string name, string text, Vector2i pos,
         Vector4? color = null, Vector2? dir = null, string? lang = null)
     {
-        FontData data = new FontData
+        var data = new FontData
         {
             Font = Name,
             Text = text,
@@ -49,7 +50,7 @@ public class Font : FreeTypeFont
         Vector4? color = null, Vector2? dir = null, string? lang = null
     )
     {
-        string text = String.Format(localisation.phrase[name], args);
+        var text = string.Format(localisation.phrase[name], args);
         AddText(name, text, pos, color, dir, lang);
     }
 
@@ -62,12 +63,10 @@ public class Font : FreeTypeFont
     public new void Dispose()
     {
         Fonts.Remove(Name); // dell Font
-        foreach (KeyValuePair<string, FontData> fontData in List)
-        {
+        foreach (var fontData in List)
             // deleting lines of text that use the current font
             if (fontData.Value.Font == Name)
                 List.Remove(fontData.Key);
-        }
 
         base.Dispose();
     }

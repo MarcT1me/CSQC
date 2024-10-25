@@ -12,9 +12,8 @@ public delegate void UniformMSetter<T>(int location, bool transpose, ref T value
 
 public class ShaderProgram
 {
-    public int ProgramPtr { get; }
-    private readonly Shader _vertShader;
     private readonly Shader _fragShader;
+    private readonly Shader _vertShader;
 
     public ShaderProgram(string rootDirectory, string path)
     {
@@ -39,6 +38,8 @@ public class ShaderProgram
             programLinkStatus.WriteLog();
     }
 
+    public int ProgramPtr { get; }
+
     public void Dispose()
     {
         GL.DeleteProgram(ProgramPtr);
@@ -58,31 +59,31 @@ public class ShaderProgram
 
     public void SetUniform<T>(UniformSetter<T> setter, string uName, T uValue) where T : struct
     {
-        int loc = GL.GetUniformLocation(ProgramPtr, uName);
+        var loc = GL.GetUniformLocation(ProgramPtr, uName);
         setter(loc, uValue);
     }
 
     public void SetUniform<T>(UniformMSetter<T> setter, string uName, bool transpose, ref T uValue) where T : struct
     {
-        int loc = GL.GetUniformLocation(ProgramPtr, uName);
+        var loc = GL.GetUniformLocation(ProgramPtr, uName);
         setter(loc, transpose, ref uValue);
     }
 
     public void GetUniform(string uName, double[] values)
     {
-        int loc = GL.GetUniformLocation(ProgramPtr, uName);
+        var loc = GL.GetUniformLocation(ProgramPtr, uName);
         GL.GetUniform(ProgramPtr, loc, values);
     }
 
     public void GetUniform(string uName, int[] values)
     {
-        int loc = GL.GetUniformLocation(ProgramPtr, uName);
+        var loc = GL.GetUniformLocation(ProgramPtr, uName);
         GL.GetUniform(ProgramPtr, loc, values);
     }
 
     public void GetUniform(string uName, float[] values)
     {
-        int loc = GL.GetUniformLocation(ProgramPtr, uName);
+        var loc = GL.GetUniformLocation(ProgramPtr, uName);
         GL.GetUniform(ProgramPtr, loc, values);
     }
 }

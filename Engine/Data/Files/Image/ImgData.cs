@@ -10,8 +10,8 @@ public class ImgData
 
     public ImgData(Stream stream)
     {
-        ImageResult imageData = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
-        this.Data = imageData.Data;
-        Size = new(imageData.Width, imageData.Height);
+        var imageData = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+        Data = imageData.Data;
+        Size = new Vector2i(imageData.Width, imageData.Height);
     }
 }

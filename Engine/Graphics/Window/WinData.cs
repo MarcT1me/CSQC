@@ -6,7 +6,7 @@ namespace Engine.Graphics.Window;
 public struct WinData
 {
     // sizes
-    public static Vector2i Size = new Vector2i(1600, 900);
+    public static Vector2i Size = new(1600, 900);
     public static Vector2 ResolutionScaling;
     public static Vector2i Resolution;
 

@@ -2,7 +2,7 @@
 using OpenTK.Mathematics;
 using SharpFont;
 
-namespace Engine.Graphics.Fonts
+namespace Engine.Graphics.Font
 {
     namespace FreeType
     {
@@ -19,24 +19,21 @@ namespace Engine.Graphics.Fonts
         {
             // array of all characters of the selected Font
             private readonly Dictionary<uint, Character> _characters = new();
-            public readonly uint FontSize;
             private readonly int _vao;
             private readonly int _vbo;
+            public readonly uint FontSize;
 
             protected FreeTypeFont(
                 uint fontSize, string fontPath, Vector2i localisationRange
             )
             {
-                Library lib = new Library();
+                var lib = new Library();
 
-                if (!File.Exists(fontPath))
-                {
-                    throw new FileNotFoundException("Font file not found: " + fontPath);
-                }
+                if (!File.Exists(fontPath)) throw new FileNotFoundException("Font file not found: " + fontPath);
 
-                byte[] fontData = File.ReadAllBytes(fontPath);
+                var fontData = File.ReadAllBytes(fontPath);
 
-                Face face = new Face(lib, fontData, 0); // Передаем массив байтов и индекс шрифта (0 для одного шрифта)
+                var face = new Face(lib, fontData, 0); // Передаем массив байтов и индекс шрифта (0 для одного шрифта)
 
                 face.SetPixelSizes(0, fontSize);
                 FontSize = fontSize;
@@ -44,10 +41,10 @@ namespace Engine.Graphics.Fonts
                 GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
 
                 GL.ActiveTexture(TextureUnit.Texture0);
-                
+
                 for (uint c = 0; c < 128; c++)
                     LoadChar(face, c);
-                for (int c = localisationRange.X; c < localisationRange.Y+1; c++)
+                for (var c = localisationRange.X; c < localisationRange.Y + 1; c++)
                     LoadChar(face, (uint)c);
 
                 GL.BindTexture(TextureTarget.Texture2D, 0);
@@ -81,15 +78,15 @@ namespace Engine.Graphics.Fonts
                 GL.BindVertexArray(0);
             }
 
-            void LoadChar(Face face, uint c)
+            private void LoadChar(Face face, uint c)
             {
                 try
                 {
                     face.LoadChar(c, LoadFlags.Render, LoadTarget.Normal);
-                    GlyphSlot glyph = face.Glyph;
-                    FTBitmap bitmap = glyph.Bitmap;
+                    var glyph = face.Glyph;
+                    var bitmap = glyph.Bitmap;
 
-                    int texObj = GL.GenTexture();
+                    var texObj = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2D, texObj);
                     GL.TexImage2D(TextureTarget.Texture2D, 0,
                         PixelInternalFormat.R8, bitmap.Width, bitmap.Rows, 0,
@@ -105,7 +102,7 @@ namespace Engine.Graphics.Fonts
                         (int)TextureWrapMode.ClampToEdge);
 
                     // add character
-                    Character ch = new Character
+                    var ch = new Character
                     {
                         TextureId = texObj,
                         Size = new Vector2(bitmap.Width, bitmap.Rows),
@@ -125,27 +122,27 @@ namespace Engine.Graphics.Fonts
                 GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindVertexArray(_vao);
 
-                float angleRad = (float)Math.Atan2(-dir.Y, dir.X);
-                Matrix4 rotateM = Matrix4.CreateRotationZ(angleRad);
-                Matrix4 transOriginM = Matrix4.CreateTranslation(new Vector3(pos.X, pos.Y, 0f));
+                var angleRad = (float)Math.Atan2(-dir.Y, dir.X);
+                var rotateM = Matrix4.CreateRotationZ(angleRad);
+                var transOriginM = Matrix4.CreateTranslation(new Vector3(pos.X, pos.Y, 0f));
 
                 // Iterate through all characters
-                float charX = 0.0f;
+                var charX = 0.0f;
                 foreach (var c in text)
                 {
-                    Character ch = _characters.TryGetValue(c, out var character) ? character : _characters['\r'];
+                    var ch = _characters.TryGetValue(c, out var character) ? character : _characters['\r'];
 
 
-                    float xRel = charX + ch.Bearing.X;
-                    float yRel = ch.Size.Y - ch.Bearing.Y;
+                    var xRel = charX + ch.Bearing.X;
+                    var yRel = ch.Size.Y - ch.Bearing.Y;
 
                     // Advance
                     charX += ch.Advance >> 6;
 
                     // Calculate main scale factor
-                    Matrix4 scaleM = Matrix4.CreateScale(new Vector3(ch.Size.X, ch.Size.Y, 1.0f));
+                    var scaleM = Matrix4.CreateScale(new Vector3(ch.Size.X, ch.Size.Y, 1.0f));
                     // I bring the size to one standard symbol
-                    Matrix4 fieldOffsetM = Matrix4.CreateTranslation(new Vector3(0)
+                    var fieldOffsetM = Matrix4.CreateTranslation(new Vector3(0)
                         {
                             Y = FontSize - ch.Size.Y - (c
                                 is '_' or '-' or '|' or '@'
@@ -155,12 +152,12 @@ namespace Engine.Graphics.Fonts
                         }
                     );
                     // offset during rotation
-                    Matrix4 rotationOffsetM = Matrix4.CreateTranslation(new Vector3(xRel, yRel, 0.0f));
+                    var rotationOffsetM = Matrix4.CreateTranslation(new Vector3(xRel, yRel, 0.0f));
 
                     // model uniform matrix 
-                    Matrix4 modelM = scaleM * fieldOffsetM * // scale
-                                     rotationOffsetM * rotateM * // rotate
-                                     transOriginM; // translate
+                    var modelM = scaleM * fieldOffsetM * // scale
+                                 rotationOffsetM * rotateM * // rotate
+                                 transOriginM; // translate
                     GL.UniformMatrix4(0, false, ref modelM);
 
                     GL.BindTexture(TextureTarget.Texture2D, ch.TextureId);
@@ -183,14 +180,11 @@ namespace Engine.Graphics.Fonts
 
             protected void Dispose()
             {
-                foreach (var ch in _characters.Values)
-                {
-                    GL.DeleteTexture(ch.TextureId);
-                }
+                foreach (var ch in _characters.Values) GL.DeleteTexture(ch.TextureId);
 
                 GL.DeleteBuffer(_vbo);
                 GL.DeleteVertexArray(_vao);
             }
         }
-    };
+    }
 }

@@ -1,39 +1,57 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+    
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <OutDir>bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName)\bin\</OutDir>
-        <PublishSingleFile>true</PublishSingleFile>
+        <OutDir>bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName)\</OutDir>
         <ApplicationIcon>QuantumCore.ico</ApplicationIcon>
     </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="ini-parser" Version="2.5.2"/>
+        <PackageReference Include="OpenTK" Version="4.8.2"/>
+        <PackageReference Include="SpaceWizards.SharpFont" Version="1.0.2"/>
+        <PackageReference Include="StbImageSharp" Version="2.30.15"/>
+    </ItemGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     </PropertyGroup>
 
-    <Target Name="MoveDataFolder" AfterTargets="Build">
-        <RemoveDir Directories="$(OutDir)\..\Data" />
-        <ItemGroup>
-            <FilesToMoveDATA Include="$(OutDir)\Data\**\*.*" />
-        </ItemGroup>
-        <Move SourceFiles="@(FilesToMoveDATA)" 
-              DestinationFolder="$(OutDir)\..\Data\%(RecursiveDir)" 
-              Condition="'%(Extension)' != '.cs'" />
-        <RemoveDir Directories="$(OutDir)\Data" />
+    <!-- Build Application -->
+    <Target Name="BuildApp" BeforeTargets="Build">
+        <MSBuild Projects="..\AppLib\AppLib.csproj" Targets="Build" Properties="Configuration=$(Configuration)"/>
     </Target>
 
-    <Target Name="MoveRuntimeFolder" AfterTargets="Build">
-        <RemoveDir Directories="$(OutDir)\..\runtimes" />
+    <!-- Copy App data in -->
+    <Target Name="CopyAppBinaries" AfterTargets="BuildApp">
+        <RemoveDir Directories="$(OutDir)\Data"/>
         <ItemGroup>
-            <FilesToMoveRUNTIME Include="$(OutDir)\runtimes\**\*.*" />
+            <AppBinaries Include="..\AppLib\bin\$(Configuration)\$(TargetFramework)\**\*.*"/>
         </ItemGroup>
-        <Move SourceFiles="@(FilesToMoveRUNTIME)" DestinationFolder="$(OutDir)\..\runtimes\%(RecursiveDir)" />
-        <RemoveDir Directories="$(OutDir)\runtimes" />
+        <Copy SourceFiles="@(AppBinaries)" DestinationFolder="$(OutDir)\%(RecursiveDir)"/>
     </Target>
-    
-    <ItemGroup>
-        <ProjectReference Include="..\AppCode\AppCode.csproj" />
-    </ItemGroup>
+
+    <!-- Delete *.pdb and *.deps.json trash files -->
+    <Target Name="DelTrash" AfterTargets="CopyAppBinaries">
+        <ItemGroup>
+            <TrashFiles Include="$(OutDir)\**\*.pdb"/>
+            <TrashFiles Include="$(OutDir)\**\*.deps.json"/>
+        </ItemGroup>
+        <Delete Files="@(TrashFiles)"/>
+    </Target>
+
+    <!-- Copy files for publish -->
+    <Target Name="CopyPublishFiles" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+        <ItemGroup>
+            <PublishBinFilesToCopy Include="$(OutDir)\bin\**\*.*"/>
+            <PublishDataFilesToCopy Include="$(OutDir)\Data\**\*.*"/>
+        </ItemGroup>
+        <RemoveDir Directories="$(PublishDir)\bin;$(PublishDir)\Data"/>
+        <Copy SourceFiles="@(PublishBinFilesToCopy)" DestinationFolder="$(PublishDir)\bin\%(RecursiveDir)"/>
+        <Copy SourceFiles="@(PublishDataFilesToCopy)" DestinationFolder="$(PublishDir)\Data\%(RecursiveDir)"/>
+    </Target>
+
 </Project>

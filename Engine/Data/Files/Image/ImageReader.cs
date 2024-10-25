@@ -6,6 +6,9 @@ public class ImageReader : Reader
 
     public ImageReader(string imagePath) : base(EngineData.RootDirectory)
     {
-        using (var stream = ReadStream(imagePath)) ImageData = new(stream);
+        using (var stream = ReadStream(imagePath))
+        {
+            ImageData = new ImgData(stream);
+        }
     }
 }

@@ -1,13 +1,12 @@
 ﻿using IniParser;
-using IniParser.Model;
 using OpenTK.Mathematics;
 
 namespace Engine.Data.Files.Localisation;
 
 public class LangParser
 {
-    private readonly FileIniDataParser _parser;
     public static string? Directory = null;
+    private readonly FileIniDataParser _parser;
 
     public LangParser()
     {
@@ -16,7 +15,7 @@ public class LangParser
 
     public LangData ParseFile(string language, string? filePath = null)
     {
-        IniData data = _parser.ReadFile((filePath ?? Directory) + "\\" + language + ".ini");
+        var data = _parser.ReadFile((filePath ?? Directory) + "\\" + language + ".ini");
 
         LangData localisation = new()
         {
@@ -25,12 +24,9 @@ public class LangParser
                 X = int.Parse(data["characters"]["first"]),
                 Y = int.Parse(data["characters"]["final"])
             },
-            phrase = new()
+            phrase = new Dictionary<string, string>()
         };
-        foreach (KeyData phrase in data["translation"])
-        {
-            localisation.phrase.Add(phrase.KeyName, phrase.Value);
-        }
+        foreach (var phrase in data["translation"]) localisation.phrase.Add(phrase.KeyName, phrase.Value);
 
         return localisation;
     }
