@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <OutDir>bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName)\bin\</OutDir>
+        <PublishSingleFile>true</PublishSingleFile>
+        <ApplicationIcon>QuantumCore.ico</ApplicationIcon>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    </PropertyGroup>
+
+    <Target Name="MoveDataFolder" AfterTargets="Build">
+        <RemoveDir Directories="$(OutDir)\..\Data" />
+        <ItemGroup>
+            <FilesToMoveDATA Include="$(OutDir)\Data\**\*.*" />
+        </ItemGroup>
+        <Move SourceFiles="@(FilesToMoveDATA)" 
+              DestinationFolder="$(OutDir)\..\Data\%(RecursiveDir)" 
+              Condition="'%(Extension)' != '.cs'" />
+        <RemoveDir Directories="$(OutDir)\Data" />
+    </Target>
+
+    <Target Name="MoveRuntimeFolder" AfterTargets="Build">
+        <RemoveDir Directories="$(OutDir)\..\runtimes" />
+        <ItemGroup>
+            <FilesToMoveRUNTIME Include="$(OutDir)\runtimes\**\*.*" />
+        </ItemGroup>
+        <Move SourceFiles="@(FilesToMoveRUNTIME)" DestinationFolder="$(OutDir)\..\runtimes\%(RecursiveDir)" />
+        <RemoveDir Directories="$(OutDir)\runtimes" />
+    </Target>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\AppCode\AppCode.csproj" />
+    </ItemGroup>
+</Project>

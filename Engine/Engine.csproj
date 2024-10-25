@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <OutDir>bin\$(Configuration)\$(TargetFramework)\bin\</OutDir>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="ini-parser" Version="2.5.2"/>
+        <PackageReference Include="OpenTK" Version="4.8.2"/>
+        <PackageReference Include="SpaceWizards.SharpFont" Version="1.0.2"/>
+        <PackageReference Include="StbImageSharp" Version="2.30.15"/>
+    </ItemGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    </PropertyGroup>
+
+    <Target Name="MoveFolder" AfterTargets="Build">
+        <RemoveDir Directories="$(OutDir)\..\Data"/>
+        <ItemGroup>
+            <FilesToMove Include="$(OutDir)\Data\**\*.*"/>
+        </ItemGroup>
+        <Move SourceFiles="@(FilesToMove)"
+              DestinationFolder="$(OutDir)\..\Data\%(RecursiveDir)"
+              Condition="'%(Extension)' != '.cs'"/>
+        <RemoveDir Directories="$(OutDir)\Data" />
+    </Target>
+
+    <ItemGroup>
+        <Content Include="Data\**\*.*">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        
+        <Content Include="Graphics\Font\freetype6.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>freetype6.dll</Link>
+        </Content>
+    </ItemGroup>
+
+</Project>

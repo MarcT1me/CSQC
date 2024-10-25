@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <OutDir>bin\$(Configuration)\$(TargetFramework)\bin\</OutDir>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    </PropertyGroup>
+
+    <Target Name="MoveFolder" AfterTargets="Build">
+        <RemoveDir Directories="$(OutDir)\..\Data" />
+        <ItemGroup>
+            <FilesToMove Include="$(OutDir)\Data\**\*.*" />
+        </ItemGroup>
+        <Move SourceFiles="@(FilesToMove)" 
+              DestinationFolder="$(OutDir)\..\Data\%(RecursiveDir)"  
+              Condition="'%(Extension)' != '.cs'" />
+        <RemoveDir Directories="$(OutDir)\Data" />
+    </Target>
+
+    <ItemGroup>
+        <Content Include="Data\**\*.*">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+
+        <ProjectReference Include="..\Engine\Engine.csproj" />
+    </ItemGroup>
+
+</Project>
