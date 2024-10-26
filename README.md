@@ -7,8 +7,9 @@
 
 ---
 >>>> ### list of changes
->>>> - adding on GitHub
->>>> - create a QTracer
+>>>> - create a Clock
+>>>> - create a Task
+>>>> - create a Timer
 >>>> - improving the build logic
 
 ## Overview

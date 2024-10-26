@@ -12,7 +12,7 @@ public class Test : QObject
     [QTracer<QObject>(TraceType.Callback)]
     public static int TestCall(string s)
     {
-        Console.WriteLine("TestArg: " + s + "\tTestCall: " + _some);
+        Console.WriteLine("TestArg S: " + s + "\tTestCall: " + _some);
         _some++;
         return _some;
     }
@@ -21,7 +21,7 @@ public class Test : QObject
     {
     }
 
-    public override void Update(float deltaTime)
+    public override void Update()
     {
     }
 

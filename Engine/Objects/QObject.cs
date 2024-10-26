@@ -15,7 +15,7 @@ public abstract class QObject
     }
 
     public abstract void HandleEvent(int eventId);
-    public abstract void Update(float deltaTime);
+    public abstract void Update();
     public abstract void Render();
 
     public virtual void Dispose()

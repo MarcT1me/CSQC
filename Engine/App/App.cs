@@ -2,6 +2,7 @@
 using Engine.Graphics.Window;
 using Engine.Objects;
 using Engine.Objects.Tracer;
+using Engine.Time;
 
 namespace Engine.App;
 
@@ -10,13 +11,14 @@ public abstract class App : QObject
 {
     protected Window Window;
 
-    // public Clock Clock;
+    public Clock Clock;
 
     [Obsolete("Obsolete")]
     public App() : base(EngineData.AppName)
     {
         QTracerAttribute<QObject>.HandleInstances();
-        Window = new Window();
+        Window = new();
+        Clock = new();
     }
 
     public static bool Running { get; set; } = true;
@@ -39,9 +41,11 @@ public abstract class App : QObject
 
         while (Running)
         {
-            HandleEvent(1);
-            Update(1);
+            HandleEvent(0);
+            Update();
             Render();
+
+            Clock.Tick();
         }
     }
 

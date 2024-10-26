@@ -9,12 +9,13 @@
         <ApplicationIcon>QuantumCore.ico</ApplicationIcon>
         <Company>QuantumDev</Company>
         <AssemblyVersion>1</AssemblyVersion>
-        <FileVersion>0.0.1.0+1</FileVersion>
+        <FileVersion>0.0.1.1</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="ini-parser" Version="2.5.2"/>
         <PackageReference Include="OpenTK" Version="4.8.2"/>
+        <PackageReference Include="SDL2-CS.NetCore" Version="2.0.8" />
         <PackageReference Include="SpaceWizards.SharpFont" Version="1.0.2"/>
         <PackageReference Include="StbImageSharp" Version="2.30.15"/>
     </ItemGroup>
@@ -66,6 +67,7 @@
             <TempAppDependencies Include="$(OutDir)\*.*.dll"/>
             <TempAppDependencies Include="$(OutDir)\*Sharp*.dll"/>
             <TempAppDependencies Include="$(OutDir)\*INI*.dll"/>
+            <TempAppDependencies Include="$(OutDir)\*CS*.dll"/>
         </ItemGroup>
         
         <ItemGroup>

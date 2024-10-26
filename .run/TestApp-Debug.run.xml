@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="TestApp-DEbug" type="RunExe" factoryName=".NET Executable">
+  <configuration default="false" name="TestApp-Debug" type="RunExe" factoryName=".NET Executable">
     <option name="EXE_PATH" value="$PROJECT_DIR$/TestApp/bin/Debug/net8.0/TestApp/TestApp.exe" />
     <option name="PROGRAM_PARAMETERS" value="" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TestApp/bin/Debug/net8.0/TestApp" />
