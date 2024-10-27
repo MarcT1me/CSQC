@@ -7,10 +7,9 @@
 
 ---
 >>>> ### list of changes
->>>> - create a Clock
->>>> - create a Task
->>>> - create a Timer
->>>> - improving the build logic
+>>>> - Change the Window class
+>>>> - Switching to a mix of SDL and Opengl.Graphics
+>>>> - Create a OpenGL namespace
 
 ## Overview
 QuantumCore Engine is a powerful game engine designed to bring your game development dreams to life. Originally developed in Python, the engine has been meticulously ported to C# to leverage the performance and flexibility of the .NET ecosystem.
