@@ -1,9 +1,6 @@
-﻿// ReSharper disable MemberCanBePrivate.Global
-
-using Engine.Data.Files;
+﻿using Engine.Data.Files;
 using OpenTK.Graphics.OpenGL;
 
-// file namespace
 namespace Engine.Graphics.Shaders;
 
 public class Shader : Reader

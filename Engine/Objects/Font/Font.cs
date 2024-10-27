@@ -2,10 +2,6 @@
 using Engine.Graphics.Font.FreeType;
 using OpenTK.Mathematics;
 
-// engine
-
-#pragma warning disable CS8500
-
 namespace Engine.Objects.Font;
 
 public class Font : FreeTypeFont

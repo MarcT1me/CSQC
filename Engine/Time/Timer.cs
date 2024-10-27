@@ -1,19 +1,21 @@
 namespace Engine.Time;
 
-public class TimerEventArgs(bool success) : EventArgs
+public delegate void TimerEventHandler(object sender, TimerEventArgs e);
+
+public class TimerEventArgs : EventArgs
 {
-    public bool Success => success;
+    public bool Success;
 }
 
-public class Timer(float duration, TimerMode mode, EventHandler callback)
+public class Timer(double duration, TimerMode mode)
 {
     public static Dictionary<int, Timer> List { get; } = new();
 
-    public float Duration = duration;
-    public float RemainingTime = duration;
-    public float StartTime = Clock.CurrentTime;
+    public double Duration = duration;
+    public double RemainingTime = duration;
+    public double StartTime = Clock.CurrentTime;
     public TimerMode Mode = mode;
-    public EventHandler Callback = callback;
+    public event TimerEventHandler? OnEvent;
     public bool Running;
 
     public void Start()
@@ -45,7 +47,7 @@ public class Timer(float duration, TimerMode mode, EventHandler callback)
             {
                 Stop();
                 if (Mode.HasFlag(TimerMode.Causing))
-                    Callback(this, new TimerEventArgs(true));
+                    OnEvent?.Invoke(this, new TimerEventArgs { Success = true });
                 if (Mode.HasFlag(TimerMode.Finite) || Mode.HasFlag(TimerMode.Default))
                 {
                     List.Remove(GetHashCode());

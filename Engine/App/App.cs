@@ -1,24 +1,34 @@
 ﻿using Engine.Data;
+using Engine.Event;
+using Engine.Graphics.OpenGL;
 using Engine.Graphics.Window;
 using Engine.Objects;
 using Engine.Objects.Tracer;
 using Engine.Time;
+using Engine.Threading;
+using OpenTK.Graphics.OpenGL;
 
 namespace Engine.App;
 
-[QTracer<QObject>(TraceType.Scan)]
 public abstract class App : QObject
 {
     protected Window Window;
+    protected QEventHandler QEventHandler;
+    private readonly QTask _task;
 
-    public Clock Clock;
-
-    [Obsolete("Obsolete")]
-    public App() : base(EngineData.AppName)
+    protected App() : base(EngineData.AppName)
     {
         QTracerAttribute<QObject>.HandleInstances();
+
+        Window.InitialiseSdl();
+        OpenGl.Initialise();
+        Clock.Initialise();
+
         Window = new();
-        Clock = new();
+        OpenGl.SetGl();
+
+        QEventHandler = new();
+        _task = new(HandleEvents);
     }
 
     public static bool Running { get; set; } = true;
@@ -26,8 +36,35 @@ public abstract class App : QObject
     protected void OnStart()
     {
         Console.WriteLine("OnStart");
+    }
 
-        Window.Run();
+    private void HandleEvents(QTask sender, QExtended? args)
+    {
+        Console.WriteLine("start");
+        while (Running)
+        {
+        }
+
+        sender.Join();
+    }
+
+    private void Run()
+    {
+        OnStart();
+
+        _task.Start();
+        
+        while (Running)
+        {
+            QEventHandler.HandleEvents();
+            Update();
+            Render();
+
+            Window.MakeCurrent();
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            Window.SwapBuffers();
+            Clock.Tick();
+        }
     }
 
     protected void OnFailure(Exception exception)
@@ -35,22 +72,9 @@ public abstract class App : QObject
         Console.Error.WriteLine(exception.Message);
     }
 
-    public void Run()
+    public void Dispose()
     {
-        OnStart();
-
-        while (Running)
-        {
-            HandleEvent(0);
-            Update();
-            Render();
-
-            Clock.Tick();
-        }
-    }
-
-    public override void Dispose()
-    {
+        Running = false;
         Window.Dispose();
     }
 

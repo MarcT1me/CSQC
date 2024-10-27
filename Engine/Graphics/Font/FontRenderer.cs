@@ -1,11 +1,7 @@
 ﻿using Engine.Data.Files.Localisation;
 using Engine.Graphics.Shaders;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
-
-// engine
-
-#pragma warning disable CS8500
 
 namespace Engine.Graphics.Font;
 

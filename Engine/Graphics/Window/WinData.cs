@@ -1,37 +1,40 @@
 ﻿using OpenTK.Mathematics;
-using OpenTK.Windowing.Common;
+using SDL2;
 
 namespace Engine.Graphics.Window;
 
 public struct WinData
 {
     // sizes
-    public static Vector2i Size = new(1600, 900);
-    public static Vector2 ResolutionScaling;
+    private static Vector2i _size = new(1600, 900);
+    private static Vector2 _resolutionScaling;
+
+    public static Vector2i Size
+    {
+        get => _size;
+        set
+        {
+            _size = value;
+            Resolution = (Vector2i)(Size * _resolutionScaling);
+        }
+    }
+
+    public static Vector2i ResolutionScaling
+    {
+        get => _size;
+        set
+        {
+            _resolutionScaling = value;
+            Resolution = (Size * value);
+        }
+    }
+
     public static Vector2i Resolution;
 
     // orientation
-    public static int Display;
-    public static Vector2i Position;
+    public static Vector2i Position = new(SDL.SDL_WINDOWPOS_CENTERED);
 
     // other
     public static string Title = "QuantumGame";
-    public static float Opacity = 1.0f;
-    public static VSyncMode VSync = VSyncMode.Adaptive;
-    public static bool FullScreen = false;
-    public static int FrameRate = 60;
-
-    public WinData()
-    {
-        ResolutionScaling = default;
-        Display = default;
-        Position = default;
-
-        Update();
-    }
-
-    public void Update()
-    {
-        Resolution = (Vector2i)(Size * ResolutionScaling);
-    }
+    public static SDL.SDL_WindowFlags Flags;
 }

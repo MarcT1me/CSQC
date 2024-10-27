@@ -2,10 +2,10 @@ using SDL2;
 
 namespace Engine.Time;
 
-public class Clock
+public static class Clock
 {
     private static uint _fps;
-    private static float _frameDelay;
+    private static double _frameDelay;
 
     // public Clock fields
     public static uint Fps
@@ -20,43 +20,42 @@ public class Clock
             else
             {
                 _fps = value;
-                _frameDelay = 1000.0f / value;
+                _frameDelay = 1000.0d / value;
             }
         }
     }
 
-    public static float DeltaTime { get; private set; }
-    public static float LastTime { get; private set; }
-    public static int CurrentTime { get; private set; }
+    public static double DeltaTime { get; private set; }
+    public static double CurrentTime { get; private set; }
 
-    public Clock(float? fps = null)
+    public static void Initialise(float? fps = null)
     {
         if (fps.HasValue)
         {
             Fps = (uint)fps.Value;
         }
 
-        LastTime = SDL.SDL_GetTicks();
+        CurrentTime = SDL.SDL_GetTicks();
     }
 
-    public float GetFps()
+    public static double GetFps()
     {
-        return DeltaTime * Fps;
+        return 1.0d / DeltaTime;
     }
 
-    public void Tick()
+    public static void Tick()
     {
-        CurrentTime = (int)SDL.SDL_GetTicks();
-        uint deltaTime = (uint)(CurrentTime - LastTime);
-        LastTime = CurrentTime;
-        DeltaTime = deltaTime / 1000.0f;
+        UInt64 currentCounter = SDL.SDL_GetPerformanceCounter();
+        UInt64 currentFrequency = SDL.SDL_GetPerformanceFrequency();
+        double currentTime = (double)currentCounter / currentFrequency;
+        double deltaTime = currentTime - CurrentTime;
+        CurrentTime = currentTime;
+        DeltaTime = deltaTime;
 
-        if (DeltaTime < _frameDelay)
+        if (deltaTime < _frameDelay)
         {
-            uint delay = (uint)(_frameDelay - deltaTime);
-            SDL.SDL_Delay(delay);
-            deltaTime += delay;
-            DeltaTime = deltaTime / 1000.0f;
+            double delay = _frameDelay - deltaTime;
+            SDL.SDL_Delay((uint)delay);
         }
     }
 }

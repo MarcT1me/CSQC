@@ -1,9 +1,5 @@
-﻿// ReSharper disable MemberCanBePrivate.Global
+﻿using OpenTK.Graphics.OpenGL;
 
-using OpenTK.Graphics.OpenGL;
-
-
-// file namespace
 namespace Engine.Graphics.Shaders;
 
 public delegate void UniformSetter<T>(int location, T value) where T : struct;

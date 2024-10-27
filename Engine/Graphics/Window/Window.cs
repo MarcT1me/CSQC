@@ -1,87 +1,70 @@
-﻿using System.ComponentModel;
-using Engine.Data;
-using Engine.Data.Files.Image;
-using Engine.Objects;
-using Engine.Objects.Tracer;
-using OpenTK.Mathematics;
-using OpenTK.Windowing.Common;
-using OpenTK.Windowing.Common.Input;
-using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-using Image = OpenTK.Windowing.Common.Input.Image;
-
-// Engine
-// other
+using SDL2;
+using OpenTK;
+using OpenTK.Graphics.OpenGL;
 
 namespace Engine.Graphics.Window;
 
-public class Window : GameWindow
+internal class SdlBindingsContext : IBindingsContext
 {
-    [Obsolete("Obsolete")]
-    public Window() : base(
-        new GameWindowSettings(), new NativeWindowSettings
-        {
-            // Window
-            Title = WinData.Title,
-            Size = WinData.Size,
-            Vsync = WinData.VSync,
-            // OpenGl
-            APIVersion = GLData.ApiVersions,
-            API = ContextAPI.OpenGL,
-            Profile = ContextProfile.Core,
-            NumberOfSamples = GLData.NumberOfSamples,
-            DepthBits = GLData.DepthBits,
-            Flags = !EngineData.IsRelease
-                ? ContextFlags.Debug
-                : new Vector2(GLData.ApiVersions.Major, GLData.ApiVersions.Minor).Length
-                  >
-                  new Vector2(3, 3).Length
-                    ? ContextFlags.ForwardCompatible
-                    : ContextFlags.Default
-        }
-    )
+    public IntPtr GetProcAddress(string procName)
     {
-        var image = new ImageReader(
-            @"Data\Assets\QuantumCore.png"
-        ).ImageData;
-        Icon = new WindowIcon(new Image(image.Size.X, image.Size.Y, image.Data));
+        return SDL.SDL_GL_GetProcAddress(procName);
+    }
+}
 
-        KeyDown += OnKeyDownCb;
+public class Window
+{
+    private readonly IntPtr _window;
+    private readonly IntPtr _glContext;
+
+    public IntPtr Get => _window;
+
+    public static void InitialiseSdl()
+    {
+        SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
     }
 
-    private void OnKeyDownCb(KeyboardKeyEventArgs e)
+    public static void UnInitialiseSdl()
     {
-        if (e.Key == Keys.A) Console.WriteLine("A pressed");
+        SDL.SDL_Quit();
     }
 
-    protected override void OnUpdateFrame(FrameEventArgs frame)
+    public Window()
     {
-        if (KeyboardState.IsKeyDown(Keys.Escape))
+        _window = SDL.SDL_CreateWindow(
+            WinData.Title,
+            WinData.Position.X, WinData.Position.Y,
+            WinData.Size.X, WinData.Size.Y,
+            WinData.Flags | SDL.SDL_WindowFlags.SDL_WINDOW_OPENGL);
+        if (_window == IntPtr.Zero)
         {
-            Console.WriteLine("Escape");
-            Close();
+            throw new Exception("Failed to create window: " + SDL.SDL_GetError());
         }
-        else if (KeyboardState.IsKeyDown(Keys.Enter))
+
+        _glContext = SDL.SDL_GL_CreateContext(_window);
+        if (_glContext == IntPtr.Zero)
         {
-            QTracerAttribute<QObject>.HandleInstances();
+            throw new Exception("Failed to create OpenGL context: " + SDL.SDL_GetError());
         }
-        else if (KeyboardState.IsKeyDown(Keys.Space))
-        {
-            var v = QObject.CallbackList["TestCall"].Invoke(null, EngineData.AppName);
-            Console.WriteLine(v);
-        }
+
+        GL.LoadBindings(new SdlBindingsContext());
     }
 
-    protected override void OnClosing(CancelEventArgs e)
-    {
-        base.OnClosing(e);
-        Console.WriteLine("Close");
-        App.App.Running = false;
-    }
+    public void Show() => SDL.SDL_ShowWindow(_window);
+    public void Hide() => SDL.SDL_HideWindow(_window);
+    public void Raise() => SDL.SDL_RaiseWindow(_window);
+    public void Minimize() => SDL.SDL_MinimizeWindow(_window);
+    public void Maximize() => SDL.SDL_MaximizeWindow(_window);
 
-    public override void Dispose()
+    public void MakeCurrent() => SDL.SDL_GL_MakeCurrent(_window, _glContext);
+    public void SwapBuffers() => SDL.SDL_GL_SwapWindow(_window);
+
+    public void DeleteContext() => SDL.SDL_GL_DeleteContext(_glContext);
+    public void Close() => SDL.SDL_DestroyWindow(_window);
+
+    public void Dispose()
     {
-        base.Dispose();
-        Console.WriteLine("Window dispose");
+        Close();
+        DeleteContext();
     }
 }

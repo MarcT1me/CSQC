@@ -1,4 +1,5 @@
-﻿using Engine.Objects.Tracer;
+﻿using Engine.Event;
+using Engine.Objects.Tracer;
 
 namespace Engine.Objects;
 
@@ -12,13 +13,10 @@ public abstract class QObject
     public QObject(string? id = null)
     {
         QMeta = new QMeta(id);
+        QEventHandler.OnEvent += HandleEvent;
     }
 
-    public abstract void HandleEvent(int eventId);
+    public abstract void HandleEvent(SdlEventArgs e);
     public abstract void Update();
     public abstract void Render();
-
-    public virtual void Dispose()
-    {
-    }
 }

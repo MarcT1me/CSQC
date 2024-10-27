@@ -1,10 +1,9 @@
-using Engine.App;
+using Engine.Event;
 using Engine.Objects;
 using Engine.Objects.Tracer;
 
 namespace AppLib.Test;
 
-[QTracer<App>(TraceType.Scan)]
 public class Test : QObject
 {
     private static int _some;
@@ -17,7 +16,7 @@ public class Test : QObject
         return _some;
     }
 
-    public override void HandleEvent(int eventId)
+    public override void HandleEvent(SdlEventArgs e)
     {
     }
 

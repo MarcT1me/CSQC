@@ -15,6 +15,7 @@ internal abstract class Program
 
         Console.WriteLine("Loading assemblies from " + relativePath);
         NativeLibrary.Load(Path.Combine(relativePath, "glfw3.dll")); // load GLFW from bin (publish)
+        NativeLibrary.Load(Path.Combine(relativePath, "SDL2.dll"));  // load GLFW from bin (publish)
 
         Assembly engineLib = Assembly.Load("Engine"); // load Engine
         Assembly appLib = Assembly.Load("AppLib"); // load App
