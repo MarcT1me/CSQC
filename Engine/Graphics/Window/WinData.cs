@@ -6,10 +6,10 @@ namespace Engine.Graphics.Window;
 public struct WinData
 {
     // sizes
-    private static Vector2i _size = new(1600, 900);
-    private static Vector2 _resolutionScaling;
+    private Vector2i _size = new(1600, 900);
+    private Vector2 _resolutionScaling;
 
-    public static Vector2i Size
+    public Vector2i Size
     {
         get => _size;
         set
@@ -19,7 +19,7 @@ public struct WinData
         }
     }
 
-    public static Vector2i ResolutionScaling
+    public Vector2i ResolutionScaling
     {
         get => _size;
         set
@@ -29,12 +29,20 @@ public struct WinData
         }
     }
 
-    public static Vector2i Resolution;
+    public Vector2i Resolution;
 
     // orientation
-    public static Vector2i Position = new(SDL.SDL_WINDOWPOS_CENTERED);
+    public Vector2i Position = new(SDL.SDL_WINDOWPOS_CENTERED);
 
     // other
-    public static string Title = "QuantumGame";
-    public static SDL.SDL_WindowFlags Flags;
+    public string Title = "QuantumGame";
+    public SDL.SDL_WindowFlags Flags;
+    public float Opacity = 1.0f;
+
+    public WinData()
+    {
+        _resolutionScaling = default;
+        Resolution = default;
+        Flags = (SDL.SDL_WindowFlags)0;
+    }
 }

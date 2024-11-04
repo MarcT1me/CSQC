@@ -30,17 +30,17 @@ public static class OpenGl
         );
     }
 
-    public static void SetGl()
+    public static void SetGl(GlData glData)
     {
         GL.Enable(EnableCap.DepthTest | EnableCap.Blend | EnableCap.CullFace);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         GL.DepthFunc(DepthFunction.Lequal);
-        SetViewport();
-        GL.ClearColor(0.08f, 0.16f, 0.18f, 1.0f);
+        SetViewport(glData);
+        GL.ClearColor(glData.ClearColor.X, glData.ClearColor.Y, glData.ClearColor.Z, glData.ClearColor.W);
     }
 
-    public static void SetViewport()
+    public static void SetViewport(GlData glData)
     {
-        GL.Viewport(GlData.Position.X, GlData.Position.Y, GlData.Resolution.X, GlData.Resolution.Y);
+        GL.Viewport(glData.Position.X, glData.Position.Y, glData.Resolution.X, glData.Resolution.Y);
     }
 }

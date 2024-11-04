@@ -4,11 +4,11 @@ using Engine.Objects.Tracer;
 
 namespace AppLib.Test;
 
-public class Test : QObject
+public class Test : QObject<QMeta>
 {
     private static int _some;
 
-    [QTracer<QObject>(TraceType.Callback)]
+    [QTracer<QObject<QMeta>>(TraceType.Callback)]
     public static int TestCall(string s)
     {
         Console.WriteLine("TestArg S: " + s + "\tTestCall: " + _some);

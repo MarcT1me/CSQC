@@ -3,20 +3,24 @@ using Engine.Objects.Tracer;
 
 namespace Engine.Objects;
 
-public abstract class QObject
+public abstract class QObject<T> where T : struct
 {
     public static readonly Dictionary<string, Type> List = [];
     public static readonly Dictionary<string, Callback> CallbackList = [];
 
-    public IQMeta QMeta;
+    public T QMeta;
 
-    public QObject(string? id = null)
+    public QObject()
     {
-        QMeta = new QMeta(id);
         QEventHandler.OnEvent += HandleEvent;
     }
 
     public abstract void HandleEvent(SdlEventArgs e);
     public abstract void Update();
     public abstract void Render();
+
+    public virtual void Dispose()
+    {
+        QEventHandler.OnEvent -= HandleEvent;
+    }
 }

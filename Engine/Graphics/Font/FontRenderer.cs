@@ -1,5 +1,5 @@
 ﻿using Engine.Data.Files.Localisation;
-using Engine.Graphics.Shaders;
+using Engine.Graphics.OpenGL.Shaders;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 

@@ -1,6 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL;
 
-namespace Engine.Graphics.Shaders;
+namespace Engine.Graphics.OpenGL.Shaders;
 
 public delegate void UniformSetter<T>(int location, T value) where T : struct;
 

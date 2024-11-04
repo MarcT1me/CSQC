@@ -1,7 +1,7 @@
 ﻿using Engine.Data.Files;
 using OpenTK.Graphics.OpenGL;
 
-namespace Engine.Graphics.Shaders;
+namespace Engine.Graphics.OpenGL.Shaders;
 
 public class Shader : Reader
 {

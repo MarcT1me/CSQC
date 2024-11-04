@@ -1,85 +1,92 @@
-﻿using Engine.Data;
-using Engine.Event;
+﻿using Engine.Event;
 using Engine.Graphics.OpenGL;
 using Engine.Graphics.Window;
 using Engine.Objects;
 using Engine.Objects.Tracer;
 using Engine.Time;
-using Engine.Threading;
+using SDL2;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
+
 
 namespace Engine.App;
 
-public abstract class App : QObject
+internal class SdlBindingsContext : IBindingsContext
 {
-    protected Window Window;
-    protected QEventHandler QEventHandler;
-    private readonly QTask _task;
-
-    protected App() : base(EngineData.AppName)
+    public IntPtr GetProcAddress(string procName)
     {
-        QTracerAttribute<QObject>.HandleInstances();
+        return SDL.SDL_GL_GetProcAddress(procName);
+    }
+}
 
+public abstract class App : QObject<QMeta>
+{
+    protected virtual void PreInit()
+    {
         Window.InitialiseSdl();
         OpenGl.Initialise();
         Clock.Initialise();
+    }
 
-        Window = new();
-        OpenGl.SetGl();
+    protected App()
+    {
+        PreInit();
 
-        QEventHandler = new();
-        _task = new(HandleEvents);
+        GL.LoadBindings(new SdlBindingsContext());
     }
 
     public static bool Running { get; set; } = true;
 
-    protected void OnStart()
+    protected virtual void OnStart()
     {
-        Console.WriteLine("OnStart");
+        foreach (Window window in Window.Roster.Values) window.SetGl();
     }
 
-    private void HandleEvents(QTask sender, QExtended? args)
+    public override void HandleEvent(SdlEventArgs e)
     {
-        Console.WriteLine("start");
-        while (Running)
+        switch (e.Event.type)
         {
+            case SDL.SDL_EventType.SDL_QUIT:
+                Console.WriteLine("Quit");
+                Running = false;
+                break;
         }
-
-        sender.Join();
     }
 
     private void Run()
     {
         OnStart();
 
-        _task.Start();
-        
         while (Running)
         {
             QEventHandler.HandleEvents();
             Update();
             Render();
 
-            Window.MakeCurrent();
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            Window.SwapBuffers();
+            foreach (Window win in Window.Roster.Values) win.Render();
+
             Clock.Tick();
         }
     }
 
-    protected void OnFailure(Exception exception)
+    protected virtual void OnFailure(Exception exception)
     {
         Console.Error.WriteLine(exception.Message);
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
-        Running = false;
-        Window.Dispose();
+        base.Dispose();
+
+        foreach (var win in Window.Roster.Values) win.Dispose();
+
+        Window.UnInitialiseSdl();
     }
 
     public static void Mainloop<T>() where T : App
     {
+        QTracerAttribute<QObject<QMeta>>.HandleInstances();
+
         T? app = null;
         while (Running)
         {

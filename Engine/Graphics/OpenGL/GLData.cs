@@ -3,16 +3,21 @@ using OpenTK.Mathematics;
 
 namespace Engine.Graphics.OpenGL;
 
-public struct GlData
+public struct GlData()
 {
-    // scaling
-    public static Vector2i Resolution => WinData.Resolution;
-    public static Vector2i Position = default;
+    // Static init info
     public static int NumberOfSamples = 8;
-    public static readonly int DepthBits = 24;
+    public static int DepthBits = 24;
+    public static Vector2i ApiVersions = new(3, 3);
 
+    // scaling
+    public Vector2i Position = default;
+    public Vector2i Resolution = default;
+    
+    // field
+    // public float Near = 0.00001f;
+    // public float Far = 1000.0f;
+    
     // other
-    public static readonly Vector2i ApiVersions = new(3, 3);
-    // public static float Near = 0.00001f;
-    // public static float Far = 1000.0f;
+    public Vector4 ClearColor = new Vector4(0.08f, 0.16f, 0.18f, 1.0f);
 }

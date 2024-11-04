@@ -1,6 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL;
 
-namespace Engine.Graphics.Shaders;
+namespace Engine.Graphics.OpenGL.Shaders;
 
 public readonly struct ShaderCreateStatus
 {
