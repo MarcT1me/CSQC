@@ -35,7 +35,7 @@ public class Window : QObject<WinMeta>
             winData.Title,
             winData.Position.X, winData.Position.Y,
             winData.Size.X, winData.Size.Y,
-            winData.Flags | SDL.SDL_WindowFlags.SDL_WINDOW_OPENGL);
+            winData.Flags | SDL.SDL_WindowFlags.SDL_WINDOW_OPENGL | SDL.SDL_WindowFlags.SDL_WINDOW_HIDDEN);
         if (_window == IntPtr.Zero)
         {
             throw new Exception("Failed to create window: " + SDL.SDL_GetError());
@@ -51,6 +51,8 @@ public class Window : QObject<WinMeta>
             glData.Resolution = winData.Resolution;
         QMeta = new WinMeta(id: name, index: Id, winData: winData, glData: glData);
         Roster.Add(Id, this);
+        
+        
     }
 
     public void Show() => SDL.SDL_ShowWindow(_window);

@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 
 namespace Engine.Graphics.OpenGL;
 
-public struct GlData()
+public struct GlData
 {
     // Static init info
     public static int NumberOfSamples = 8;
@@ -20,4 +20,8 @@ public struct GlData()
     
     // other
     public Vector4 ClearColor = new Vector4(0.08f, 0.16f, 0.18f, 1.0f);
+
+    public GlData()
+    {
+    }
 }

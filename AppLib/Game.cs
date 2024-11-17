@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Engine.App;
 using Engine.Event;
 using Engine.Graphics.OpenGL;
@@ -12,31 +13,36 @@ public class Game : App
 {
     private bool _show = true;
 
-    private Window _mainWin;
-    private Window _secondWin;
+    private readonly Window _mainWin = new("Main", new WinData()
+    {
+        Title = "Main Window",
+        Size = new(800, 600),
+    }, new GlData()
+    {
+        ClearColor = new Vector4(1f, 0f, 0f, 1f),
+    });
+
+    private Window? _secondWin = new("Second", new WinData()
+    {
+        Title = "Second Window",
+        Size = new(800, 600),
+        Opacity = 0.5f,
+    }, new GlData()
+    {
+        ClearColor = new Vector4(0f, 1f, 0f, 1f),
+    });
 
     protected override void PreInit()
     {
         base.PreInit();
         Clock.Fps = 0;
+    }
 
-        _mainWin = new("Main", new WinData()
-        {
-            Title = "Main Window",
-            Size = new(800, 600),
-        }, new GlData()
-        {
-            ClearColor = new Vector4(1f, 0f, 0f, 1f),
-        });
-        _secondWin = new("Second", new WinData()
-        {
-            Title = "Second Window",
-            Size = new(800, 600),
-            Opacity = 0.5f,
-        }, new GlData()
-        {
-            ClearColor = new Vector4(0f, 1f, 0f, 1f),
-        });
+    protected override void OnStart()
+    {
+        base.OnStart();
+        _mainWin.Show();
+        _secondWin?.Show();
     }
 
     public override void HandleEvent(SdlEventArgs e)
@@ -64,9 +70,9 @@ public class Game : App
                         }
 
                         if (_show)
-                            _secondWin.Maximize();
+                            _secondWin?.Maximize();
                         else
-                            _secondWin.Minimize();
+                            _secondWin?.Minimize();
                         break;
                 }
 

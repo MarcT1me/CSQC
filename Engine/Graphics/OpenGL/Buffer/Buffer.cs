@@ -3,12 +3,14 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Engine.Graphics.OpenGL.Buffer;
 
-public abstract class Buffer<T> where T : struct
+public abstract unsafe class Buffer<T> where T : struct
 {
     private readonly int _bufferPtr;
+    protected T[] _data;
 
     protected Buffer()
     {
+        _data = Array.Empty<T>();
         _bufferPtr = GL.GenBuffer();
     }
 
@@ -27,11 +29,15 @@ public abstract class Buffer<T> where T : struct
         GL.DeleteBuffer(_bufferPtr);
     }
 
-    protected void TransferData(ref T[] data)
+    protected void TransferData()
     {
         Bind();
-        GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(data.Length * Marshal.SizeOf(typeof(T))), data.ToArray(),
+        GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(_data.Length * Marshal.SizeOf(typeof(T))), _data.ToArray(),
             BufferUsageHint.StaticDraw);
         Unbind();
+    }
+    public T[] GetData()
+    {
+        return _data;
     }
 }

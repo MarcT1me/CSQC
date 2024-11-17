@@ -1,4 +1,5 @@
 using Engine.Event;
+using Engine.Graphics.OpenGL.Vertex;
 using Engine.Objects;
 using Engine.Objects.Tracer;
 
@@ -26,5 +27,14 @@ public class Test : QObject<QMeta>
 
     public override void Render()
     {
+    }
+}
+
+[QTracer<VertexArrayObject<int>>(TraceType.Scan)]
+class TestVAI : VertexAttributesInfo
+{
+    public TestVAI() 
+    {
+        Add(attr: new("test3bytes", 3, Byte));
     }
 }
