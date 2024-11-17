@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>WinExe</OutputType>
+        <OutputType>Exe</OutputType>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
@@ -13,13 +13,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="ini-parser" Version="2.5.2"/>
+        <PackageReference Include="ini-parser" Version="2.5.2" />
         <PackageReference Include="OpenTK.Graphics" Version="4.8.2" />
         <PackageReference Include="OpenTK.Mathematics" Version="4.8.2" />
         <PackageReference Include="OpenTK.redist.glfw" Version="3.4.0.44" />
         <PackageReference Include="SDL2-CS.NetCore" Version="2.0.8" />
-        <PackageReference Include="SpaceWizards.SharpFont" Version="1.0.2"/>
-        <PackageReference Include="StbImageSharp" Version="2.30.15"/>
+        <PackageReference Include="SpaceWizards.SharpFont" Version="1.0.2" />
+        <PackageReference Include="StbImageSharp" Version="2.30.15" />
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -33,62 +33,61 @@
 
     <!-- Build Application -->
     <Target Name="BuildApp" BeforeTargets="Build">
-        <RemoveDir Directories="$(OutDir)\bin"/>
-        <MSBuild Projects="..\AppLib\AppLib.csproj" Targets="Build" Properties="Configuration=$(Configuration)"/>
+        <RemoveDir Directories="$(OutDir)\bin" />
+        <MSBuild Projects="..\AppLib\AppLib.csproj" Targets="Build" Properties="Configuration=$(Configuration)" />
     </Target>
 
     <!-- Copy App data in -->
     <Target Name="CopyAppBinaries" AfterTargets="BuildApp">
-        <RemoveDir Directories="$(OutDir)\Data"/>
+        <RemoveDir Directories="$(OutDir)\Data" />
         <ItemGroup>
-            <AppBinaries Include="..\AppLib\bin\$(Configuration)\$(TargetFramework)\**\*.*"/>
+            <AppBinaries Include="..\AppLib\bin\$(Configuration)\$(TargetFramework)\**\*.*" />
         </ItemGroup>
-        <Copy SourceFiles="@(AppBinaries)" DestinationFolder="$(OutDir)\%(RecursiveDir)"/>
+        <Copy SourceFiles="@(AppBinaries)" DestinationFolder="$(OutDir)\%(RecursiveDir)" />
     </Target>
 
     <!-- Delete *.pdb and *.deps.json trash files -->
     <Target Name="DelTrash" AfterTargets="CopyAppBinaries">
         <ItemGroup>
-            <TrashFiles Include="$(OutDir)\**\*.pdb"/>
-            <TrashFiles Include="$(OutDir)\**\*.deps.json"/>
+            <TrashFiles Include="$(OutDir)\**\*.pdb" />
+            <TrashFiles Include="$(OutDir)\**\*.deps.json" />
         </ItemGroup>
-        <Delete Files="@(TrashFiles)"/>
+        <Delete Files="@(TrashFiles)" />
     </Target>
 
     <Target Name="CopyRuntimes" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
         <ItemGroup>
-            <RuntimeBinaries Include="$(OutDir)\runtimes\win-$(PlatformTarget)\**\*.*"/>
+            <RuntimeBinaries Include="$(OutDir)\runtimes\win-$(PlatformTarget)\**\*.*" />
         </ItemGroup>
-        <Move SourceFiles="@(RuntimeBinaries)" DestinationFolder="$(OutDir)\bin"/>
-        <RemoveDir Directories="$(OutDir)\runtimes"/>
+        <Move SourceFiles="@(RuntimeBinaries)" DestinationFolder="$(OutDir)\bin" />
+        <RemoveDir Directories="$(OutDir)\runtimes" />
     </Target>
 
     <Target Name="MoveAppDependencies" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
         
         <ItemGroup>
-            <TempAppDependencies Include="$(OutDir)\*.*.dll"/>
-            <TempAppDependencies Include="$(OutDir)\*Sharp*.dll"/>
-            <TempAppDependencies Include="$(OutDir)\*INI*.dll"/>
-            <TempAppDependencies Include="$(OutDir)\*CS*.dll"/>
+            <TempAppDependencies Include="$(OutDir)\*.*.dll" />
+            <TempAppDependencies Include="$(OutDir)\*Sharp*.dll" />
+            <TempAppDependencies Include="$(OutDir)\*INI*.dll" />
+            <TempAppDependencies Include="$(OutDir)\*CS*.dll" />
         </ItemGroup>
         
         <ItemGroup>
-            <UniqueAppDependencies Include="@(TempAppDependencies->Distinct())"/>
+            <UniqueAppDependencies Include="@(TempAppDependencies-&gt;Distinct())" />
         </ItemGroup>
         
-        <Move SourceFiles="@(UniqueAppDependencies)"
-              DestinationFolder="$(OutDir)\bin"/>
+        <Move SourceFiles="@(UniqueAppDependencies)" DestinationFolder="$(OutDir)\bin" />
     </Target>
 
     <!-- Copy files for publish -->
     <Target Name="CopyPublishFiles" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
         <ItemGroup>
-            <PublishBinFilesToCopy Include="bin\Debug\$(TargetFramework)\$(MSBuildProjectName)\bin\**\*.*"/>
-            <PublishDataFilesToCopy Include="bin\Debug\$(TargetFramework)\$(MSBuildProjectName)\Data\**\*.*"/>
+            <PublishBinFilesToCopy Include="bin\Debug\$(TargetFramework)\$(MSBuildProjectName)\bin\**\*.*" />
+            <PublishDataFilesToCopy Include="bin\Debug\$(TargetFramework)\$(MSBuildProjectName)\Data\**\*.*" />
         </ItemGroup>
-        <RemoveDir Directories="$(PublishDir)\bin;$(PublishDir)\Data"/>
-        <Copy SourceFiles="@(PublishBinFilesToCopy)" DestinationFolder="$(PublishDir)\bin\%(RecursiveDir)"/>
-        <Copy SourceFiles="@(PublishDataFilesToCopy)" DestinationFolder="$(PublishDir)\Data\%(RecursiveDir)"/>
+        <RemoveDir Directories="$(PublishDir)\bin;$(PublishDir)\Data" />
+        <Copy SourceFiles="@(PublishBinFilesToCopy)" DestinationFolder="$(PublishDir)\bin\%(RecursiveDir)" />
+        <Copy SourceFiles="@(PublishDataFilesToCopy)" DestinationFolder="$(PublishDir)\Data\%(RecursiveDir)" />
     </Target>
 
 </Project>

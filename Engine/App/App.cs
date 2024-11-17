@@ -1,5 +1,6 @@
 ﻿using Engine.Event;
 using Engine.Graphics.OpenGL;
+using Engine.Graphics.OpenGL.Vertex;
 using Engine.Graphics.Window;
 using Engine.Objects;
 using Engine.Objects.Tracer;
@@ -11,7 +12,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Engine.App;
 
-internal class SdlBindingsContext : IBindingsContext
+public class SdlBindingsContext : IBindingsContext
 {
     public IntPtr GetProcAddress(string procName)
     {
@@ -31,15 +32,18 @@ public abstract class App : QObject<QMeta>
     protected App()
     {
         PreInit();
-
         GL.LoadBindings(new SdlBindingsContext());
     }
 
     public static bool Running { get; set; } = true;
 
-    protected virtual void OnStart()
+    protected virtual void PostInit()
     {
-        foreach (Window window in Window.Roster.Values) window.SetGl();
+        foreach (Window window in Window.Roster.Values)
+        {
+            window.SetGl();
+            window.PostInit();
+        }
     }
 
     public override void HandleEvent(SdlEventArgs e)
@@ -53,17 +57,25 @@ public abstract class App : QObject<QMeta>
         }
     }
 
+    public override void Update()
+    {
+        foreach (Window win in Window.Roster.Values) win.Update();
+    }
+
+    public override void Render()
+    {
+        foreach (Window win in Window.Roster.Values) win.Render();
+    }
+
     private void Run()
     {
-        OnStart();
-
+        PostInit();
+        
         while (Running)
         {
             QEventHandler.HandleEvents();
             Update();
             Render();
-
-            foreach (Window win in Window.Roster.Values) win.Render();
 
             Clock.Tick();
         }
@@ -86,6 +98,7 @@ public abstract class App : QObject<QMeta>
     public static void Mainloop<T>() where T : App
     {
         QTracerAttribute<QObject<QMeta>>.HandleInstances();
+        QTracerAttribute<VertexAttributesInfo>.HandleInstances();
 
         T? app = null;
         while (Running)

@@ -1,48 +1,39 @@
-using System.Diagnostics;
 using Engine.App;
 using Engine.Event;
 using Engine.Graphics.OpenGL;
 using Engine.Graphics.Window;
 using Engine.Time;
 using OpenTK.Mathematics;
+using OpenTK.Graphics.OpenGL;
 using SDL2;
 
 namespace AppLib;
 
 public class Game : App
 {
-    private bool _show = true;
-
-    private readonly Window _mainWin = new("Main", new WinData()
-    {
-        Title = "Main Window",
-        Size = new(800, 600),
-    }, new GlData()
-    {
-        ClearColor = new Vector4(1f, 0f, 0f, 1f),
-    });
-
-    private Window? _secondWin = new("Second", new WinData()
-    {
-        Title = "Second Window",
-        Size = new(800, 600),
-        Opacity = 0.5f,
-    }, new GlData()
-    {
-        ClearColor = new Vector4(0f, 1f, 0f, 1f),
-    });
+    private Window _mainWin;
+    private Test.Test _test;
 
     protected override void PreInit()
     {
         base.PreInit();
+        _mainWin = new("Main", new WinData()
+        {
+            Title = "Main Window",
+            Size = new(800, 600),
+        }, new GlData()
+        {
+            ClearColor = new Vector4(1f, 0f, 0f, 1f),
+        });
         Clock.Fps = 0;
     }
 
-    protected override void OnStart()
+    protected override void PostInit()
     {
-        base.OnStart();
+        base.PostInit();
         _mainWin.Show();
-        _secondWin?.Show();
+        
+        _test = new();
     }
 
     public override void HandleEvent(SdlEventArgs e)
@@ -63,17 +54,6 @@ public class Game : App
                     case SDL.SDL_Keycode.SDLK_c:
                         CallbackList["TestCall"].Invoke(null, "Test");
                         break;
-                    case SDL.SDL_Keycode.SDLK_h:
-                        if (e.Event.window.windowID == _mainWin.Id)
-                        {
-                            _show = !_show;
-                        }
-
-                        if (_show)
-                            _secondWin?.Maximize();
-                        else
-                            _secondWin?.Minimize();
-                        break;
                 }
 
                 break;
@@ -82,9 +62,14 @@ public class Game : App
 
     public override void Update()
     {
+        base.Update();
+        _test.Update();
     }
 
     public override void Render()
     {
+        _mainWin.Render();
+        _test.Render();
+        _mainWin.SwapBuffers();
     }
 }

@@ -4,7 +4,7 @@ namespace Engine.Data;
 
 public struct EngineData
 {
-    public static string? RootDirectory;
+    public static string RootDirectory = "";
     public static Assembly? AppLibAssembly;
 
     public static bool? IsRelease;

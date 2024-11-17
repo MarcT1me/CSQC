@@ -11,7 +11,7 @@ using System;
 public class Window : QObject<WinMeta>
 {
     public static readonly object Lock = new();
-    public static Dictionary<int, Window> Roster = new();
+    public static Dictionary<string, Window> Roster = new();
 
     private IntPtr _window;
     private readonly IntPtr _glContext;
@@ -31,6 +31,7 @@ public class Window : QObject<WinMeta>
 
     public Window(string name, WinData winData, GlData glData)
     {
+        Console.WriteLine("Create Window");
         _window = SDL.SDL_CreateWindow(
             winData.Title,
             winData.Position.X, winData.Position.Y,
@@ -47,12 +48,16 @@ public class Window : QObject<WinMeta>
             throw new Exception("Failed to create OpenGL context: " + SDL.SDL_GetError());
         }
 
+        if (winData.Resolution == default)
+            winData.Resolution = winData.Size;
         if (glData.Resolution == default)
             glData.Resolution = winData.Resolution;
         QMeta = new WinMeta(id: name, index: Id, winData: winData, glData: glData);
-        Roster.Add(Id, this);
-        
-        
+        Roster.Add(name, this);
+    }
+
+    public virtual void PostInit()
+    {
     }
 
     public void Show() => SDL.SDL_ShowWindow(_window);
@@ -79,7 +84,7 @@ public class Window : QObject<WinMeta>
     {
         if (QEventHandler.IsMultiThread && Roster.Count == 1 || _window == IntPtr.Zero) return;
         base.Dispose();
-        Roster.Remove(Id);
+        Roster.Remove(QMeta.Id);
 
         Close();
         DeleteContext();
@@ -114,6 +119,5 @@ public class Window : QObject<WinMeta>
     {
         SetCurrent();
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-        SwapBuffers();
     }
 }

@@ -1,15 +1,11 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using Engine.Graphics.OpenGL.Buffer;
 using Engine.Graphics.OpenGL.Shaders;
-using System.Collections.Generic;
 
 namespace Engine.Graphics.OpenGL.Vertex;
 
 public class VertexArrayObject<T> where T : struct
 {
-    // list of all VAI
-    public static readonly Dictionary<string, Type> List = new();
-
     // data of VAO
     protected readonly int VaoPtr;
     protected readonly ShaderProgram Program;
@@ -24,14 +20,15 @@ public class VertexArrayObject<T> where T : struct
         { typeof(byte), VertexAttribPointerType.Byte },
     };
 
-    public readonly string Name;
+    public VertexAttributesInfo Attrs;
 
-    public VertexArrayObject(string name, ShaderProgram program, VertexBuffer<T> buffer)
+    public VertexArrayObject(VertexAttributesInfo attrs, ShaderProgram program, VertexBuffer<T> buffer)
     {
-        Name = name;
+        Attrs = attrs;
         Program = program;
         Buffer = buffer;
         VaoPtr = GL.GenVertexArray();
+        SetupVertexAttributes();
     }
 
     public void Bind()
@@ -50,9 +47,9 @@ public class VertexArrayObject<T> where T : struct
     {
         Bind();
 
-        var attrsField = List[Name].GetField("Attributes")?.GetValue(null)! as LinkedList<VertexAttributeInfo>;
-        VertexAttributeInfo[] attrs = attrsField!.ToArray();
-        int stride = (int)List[Name].GetField("Stride")?.GetValue(null)!;
+        LinkedList<VertexAttributeInfo> attrsField = Attrs.Attributes;
+        VertexAttributeInfo[] attrs = attrsField.ToArray();
+        int stride = Attrs.Stride;
 
         int offset = 0;
         foreach (VertexAttributeInfo attr in attrs)

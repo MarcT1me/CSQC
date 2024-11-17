@@ -18,15 +18,15 @@ public abstract class VertexAttributesInfo
     protected static readonly int UnsignedInt = sizeof(uint);
     protected static readonly int Byte = 1;
 
-    public static LinkedList<VertexAttributeInfo> Attributes { get; } = new();
-    public static int Stride { get; private set; }
+    public LinkedList<VertexAttributeInfo> Attributes { get; } = new();
+    public int Stride { get; private set; }
 
-    static VertexAttributesInfo()
+    public VertexAttributesInfo()
     {
         PostInit();
     }
     
-    static void PostInit()
+    private void PostInit()
     {
         foreach (VertexAttributeInfo attr in Attributes)
         {
@@ -34,7 +34,7 @@ public abstract class VertexAttributesInfo
         }
     }
 
-    protected static void Add(VertexAttributeInfo attr)
+    protected void Add(VertexAttributeInfo attr)
     {
         Attributes.AddLast(attr);
     }

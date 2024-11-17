@@ -15,14 +15,12 @@
 
     <!-- manipulation of game and engine data -->
     <Target Name="MoveFolder" AfterTargets="Build">
-        <RemoveDir Directories="$(OutDir)\..\Data"/>
+        <RemoveDir Directories="$(OutDir)\..\Data" />
         <ItemGroup>
-            <FilesToMove Include="$(OutDir)\Data\**\*.*"/>
+            <FilesToMove Include="$(OutDir)\Data\**\*.*" />
         </ItemGroup>
-        <Move SourceFiles="@(FilesToMove)"
-              DestinationFolder="$(OutDir)\..\Data\%(RecursiveDir)"
-              Condition="'%(Extension)' != '.cs'"/>
-        <RemoveDir Directories="$(OutDir)\Data"/>
+        <Move SourceFiles="@(FilesToMove)" DestinationFolder="$(OutDir)\..\Data\%(RecursiveDir)" Condition="'%(Extension)' != '.cs'" />
+        <RemoveDir Directories="$(OutDir)\Data" />
     </Target>
 
     <!-- adding game data -->
@@ -31,7 +29,7 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
 
-        <ProjectReference Include="..\Engine\Engine.csproj"/>
+        <ProjectReference Include="..\Engine\Engine.csproj" />
     </ItemGroup>
 
 </Project>
