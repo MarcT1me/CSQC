@@ -23,17 +23,19 @@ public class Game : App
             Size = new(800, 600),
         }, new GlData()
         {
-            ClearColor = new Vector4(1f, 0f, 0f, 1f),
+            ClearColor = new Vector4(0.1f, 0.5f, 0.4f, 1f),
         });
+        GL.LoadBindings(new SdlBindingsContext());
         Clock.Fps = 0;
     }
 
     protected override void PostInit()
     {
         base.PostInit();
-        _mainWin.Show();
-        
+        _mainWin.SetCurrent();
         _test = new();
+        _test.Update();
+        _mainWin.Show();
     }
 
     public override void HandleEvent(SdlEventArgs e)
@@ -58,12 +60,6 @@ public class Game : App
 
                 break;
         }
-    }
-
-    public override void Update()
-    {
-        base.Update();
-        _test.Update();
     }
 
     public override void Render()

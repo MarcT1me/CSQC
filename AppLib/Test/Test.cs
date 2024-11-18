@@ -8,6 +8,7 @@ using Engine.Objects;
 using Engine.Objects.Tracer;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using Engine.App;
 
 namespace AppLib.Test;
 
@@ -30,6 +31,7 @@ public class Test : QObject<QMeta>
         _quadVai = new QuadVai();
         _quadVao = new(_quadVai, _uvProgram, _quadVbo);
 
+        GL.LoadBindings(new SdlBindingsContext());
         Console.WriteLine("Create Test Object");
     }
 
@@ -47,9 +49,11 @@ public class Test : QObject<QMeta>
 
     public override void Update()
     {
+        _uvProgram.Use(true);
         Vector2 res = Window.Roster["Main"].QMeta.GlData.Resolution;
         Console.WriteLine(res);
         _uvProgram.SetUniform(GL.Uniform2, "u_resolution", res);
+        _uvProgram.Use(false);
     }
 
     public override void Render()
