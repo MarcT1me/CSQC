@@ -69,7 +69,7 @@ public class VertexArrayObject<T> where T : struct
                 return;
             }
             
-            GL.VertexAttribPointer(index, attr.Count * attr.TypeSize, Types[typeof(T)], false, attr.Count * attr.TypeSize, offset);
+            GL.VertexAttribPointer(index, attr.Count, Types[typeof(T)], false, attr.Count * attr.TypeSize, offset);
             GlCheckError($"Invalid attribute {attr.Name}");
             GL.EnableVertexAttribArray(index);
             GlCheckError($"Error enable attribute {attr.Name}");
