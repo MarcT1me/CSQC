@@ -22,6 +22,8 @@ public class SdlBindingsContext : IBindingsContext
 
 public abstract class App : QObject<QMeta>
 {
+    protected Window _mainWindow;
+    
     protected virtual void PreInit()
     {
         Window.InitialiseSdl();
@@ -29,10 +31,10 @@ public abstract class App : QObject<QMeta>
         Clock.Initialise();
     }
 
-    protected App()
+    protected App(Window mainWindow)
     {
         PreInit();
-        GL.LoadBindings(new SdlBindingsContext());
+        _mainWindow = mainWindow;
     }
 
     public static bool Running { get; set; } = true;

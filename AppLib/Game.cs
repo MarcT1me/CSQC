@@ -11,31 +11,35 @@ namespace AppLib;
 
 public class Game : App
 {
-    private Window _mainWin;
     private Test.Test _test;
 
     protected override void PreInit()
     {
         base.PreInit();
-        _mainWin = new("Main", new WinData()
+        Clock.Fps = 0;
+    }
+
+    public Game() : base(
+        new("Main", new WinData
         {
             Title = "Main Window",
-            Size = new(800, 600),
-        }, new GlData()
+            Size = new(800, 600)
+        }, new GlData
         {
-            ClearColor = new Vector4(0.1f, 0.5f, 0.4f, 1f),
-        });
+            ClearColor = new Vector4(0.1f, 0.5f, 0.4f, 1f)
+        })
+    )
+    {
         GL.LoadBindings(new SdlBindingsContext());
-        Clock.Fps = 0;
+        _test = new();
     }
 
     protected override void PostInit()
     {
         base.PostInit();
-        _mainWin.SetCurrent();
-        _test = new();
+        _mainWindow.SetCurrent();
         _test.Update();
-        _mainWin.Show();
+        _mainWindow.Show();
     }
 
     public override void HandleEvent(SdlEventArgs e)
@@ -64,8 +68,8 @@ public class Game : App
 
     public override void Render()
     {
-        _mainWin.Render();
+        _mainWindow.Render();
         _test.Render();
-        _mainWin.SwapBuffers();
+        _mainWindow.SwapBuffers();
     }
 }

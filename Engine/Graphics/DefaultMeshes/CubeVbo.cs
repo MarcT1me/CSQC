@@ -6,7 +6,7 @@ public class CubeVbo : VertexBuffer<int>
 {
     public CubeVbo()
     {
-        _data = GetVertexData();
+        Data = GetVertexData();
         TransferData();
     }
 

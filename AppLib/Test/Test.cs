@@ -17,21 +17,19 @@ public class Test : QObject<QMeta>
     private static int _some;
 
     private readonly ShaderProgram _uvProgram;
-    private readonly QuadVai _quadVai;
-    private readonly QuadVbo _quadVbo;
     private readonly VertexArrayObject<int> _quadVao;
 
     public Test()
     {
+        GL.LoadBindings(new SdlBindingsContext());
         _uvProgram = new(
             Path.Combine(EngineData.RootDirectory, "Data", "shaders"),
             "test"
         );
-        _quadVbo = new();
-        _quadVai = new QuadVai();
-        _quadVao = new(_quadVai, _uvProgram, _quadVbo);
+        QuadVbo quadVbo = new();
+        var quadVai = new QuadVai();
+        _quadVao = new(quadVai, _uvProgram, quadVbo);
 
-        GL.LoadBindings(new SdlBindingsContext());
         Console.WriteLine("Create Test Object");
     }
 
@@ -53,16 +51,15 @@ public class Test : QObject<QMeta>
         Vector2 res = Window.Roster["Main"].QMeta.GlData.Resolution;
         Console.WriteLine(res);
         _uvProgram.SetUniform(GL.Uniform2, "u_resolution", res);
+        float[] uRes = [0, 0];
+        _uvProgram.GetUniform("u_resolution", uRes);
+        Console.WriteLine($"{uRes[0]}, {uRes[1]}");
         _uvProgram.Use(false);
     }
 
     public override void Render()
     {
-        _uvProgram.Use(true);
-        _quadVao.Bind();
-        GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
-        _quadVao.Unbind();
-        _uvProgram.Use(false);
+        _quadVao.Draw();
     }
 }
 

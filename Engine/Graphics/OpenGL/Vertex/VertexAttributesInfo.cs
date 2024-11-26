@@ -19,20 +19,6 @@ public abstract class VertexAttributesInfo
     protected static readonly int Byte = 1;
 
     public LinkedList<VertexAttributeInfo> Attributes { get; } = new();
-    public int Stride { get; private set; }
-
-    public VertexAttributesInfo()
-    {
-        PostInit();
-    }
-    
-    private void PostInit()
-    {
-        foreach (VertexAttributeInfo attr in Attributes)
-        {
-            Stride += attr.Count * attr.TypeSize;
-        }
-    }
 
     protected void Add(VertexAttributeInfo attr)
     {

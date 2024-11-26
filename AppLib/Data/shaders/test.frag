@@ -1,6 +1,6 @@
 ﻿#version 330 core
 
-uniform vec2 u_resolution = vec2(800, 600);
+uniform vec2 u_resolution;
 
 void main() {
     vec2 uv = gl_FragCoord.xy / u_resolution;

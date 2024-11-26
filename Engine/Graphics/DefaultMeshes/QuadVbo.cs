@@ -6,29 +6,25 @@ public class QuadVbo : VertexBuffer<int>
 {
     public QuadVbo()
     {
-        _data = GetVertexData();
+        Data = GetVertexData();
         TransferData();
     }
 
     protected sealed override int[] GetVertexData()
     {
-        int[] data;
-
-        data = ConnectVertexData(
-            vertices: new []
-            {
-                -1, -1, 1,
-                1, -1, 1,
-                1, 1, 1,
-                -1, 1, 1,
-            },
-            indices: new []
-            {
-                0, 2, 3,
-                0, 1, 2
-            }
-        );
-
-        return data;
+        int[] vertices =
+        [
+            -1, -1, 1,
+            1, -1, 1,
+            1, 1, 1,
+            -1, 1, 1
+        ];
+        int[] indices =
+        [
+            0, 2, 3,
+            0, 1, 2
+        ];
+        indecesCount = indices.Length;
+        return ConnectVertexData(vertices, indices);
     }
 }

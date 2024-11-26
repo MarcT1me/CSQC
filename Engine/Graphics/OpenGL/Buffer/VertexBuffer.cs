@@ -3,6 +3,8 @@ namespace Engine.Graphics.OpenGL.Buffer;
 
 public abstract class VertexBuffer<T> : Buffer<T> where T : struct
 {
+    public int indecesCount = 0;
+    
     protected T[] ConnectVertexData(T[] vertices, int[] indices)
     {
         List<T> data = new();

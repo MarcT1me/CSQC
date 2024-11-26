@@ -11,7 +11,7 @@ public class VertexArrayObject<T> where T : struct
     protected readonly ShaderProgram Program;
     protected readonly VertexBuffer<T> Buffer;
 
-    protected readonly static Dictionary<Type, VertexAttribPointerType> Types = new()
+    protected static readonly Dictionary<Type, VertexAttribPointerType> Types = new()
     {
         { typeof(float), VertexAttribPointerType.Float },
         { typeof(double), VertexAttribPointerType.Double },
@@ -28,7 +28,19 @@ public class VertexArrayObject<T> where T : struct
         Program = program;
         Buffer = buffer;
         VaoPtr = GL.GenVertexArray();
+        GlCheckError();
+
         SetupVertexAttributes();
+    }
+
+    private void GlCheckError(string caption = "null")
+    {
+        ErrorCode error = GL.GetError();
+        if (error != ErrorCode.NoError)
+        {
+            // Handle or log the error
+            Console.WriteLine($"OpenGL Error: {error} - {caption}");
+        }
     }
 
     public void Bind()
@@ -43,24 +55,38 @@ public class VertexArrayObject<T> where T : struct
         GL.BindVertexArray(0);
     }
 
-    public void SetupVertexAttributes()
+    private void SetupVertexAttributes()
     {
         Bind();
 
-        LinkedList<VertexAttributeInfo> attrsField = Attrs.Attributes;
-        VertexAttributeInfo[] attrs = attrsField.ToArray();
-        int stride = Attrs.Stride;
-
         int offset = 0;
-        foreach (VertexAttributeInfo attr in attrs)
+        foreach (VertexAttributeInfo attr in Attrs.Attributes)
         {
             int index = GL.GetAttribLocation(Program.ProgramPtr, attr.Name);
-            GL.VertexAttribPointer(index, attr.Count * attr.TypeSize, Types[typeof(T)], false, stride, offset);
+            if (index == -1)
+            {
+                Console.WriteLine($"Error: Attribute '{attr.Name}' not found in shader program.");
+                return;
+            }
+            
+            GL.VertexAttribPointer(index, attr.Count * attr.TypeSize, Types[typeof(T)], false, attr.Count * attr.TypeSize, offset);
+            GlCheckError($"Invalid attribute {attr.Name}");
             GL.EnableVertexAttribArray(index);
+            GlCheckError($"Error enable attribute {attr.Name}");
+
             offset += attr.Count * attr.TypeSize;
         }
 
         Unbind();
+    }
+
+    public void Draw()
+    {
+        Program.Use(true);
+        Bind();
+        GL.DrawArrays(PrimitiveType.Triangles, 0, Buffer.indecesCount);
+        Unbind();
+        Program.Use(false);
     }
 
     void Dispose()
