@@ -4,6 +4,7 @@
 *.iml
 # test files
 *_test_*.*
+.venv
 
 ### Archives
 # It's better to unpack these files and commit the raw source because

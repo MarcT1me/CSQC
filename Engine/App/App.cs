@@ -100,7 +100,7 @@ public abstract class App : QObject<QMeta>
     public static void Mainloop<T>() where T : App
     {
         QTracerAttribute<QObject<QMeta>>.HandleInstances();
-        QTracerAttribute<VertexAttributesInfo>.HandleInstances();
+        QTracerAttribute<VertexAttributesList>.HandleInstances();
 
         T? app = null;
         while (Running)

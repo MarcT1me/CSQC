@@ -6,7 +6,7 @@ using Engine.Graphics.OpenGL.Vertex;
 using Engine.Graphics.Window;
 using Engine.Objects;
 using Engine.Objects.Tracer;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using Engine.App;
 
@@ -17,20 +17,23 @@ public class Test : QObject<QMeta>
     private static int _some;
 
     private readonly ShaderProgram _uvProgram;
-    private readonly VertexArrayObject<int> _quadVao;
+    private readonly VertexArrayObject _cubeVao;
 
     public Test()
     {
         GL.LoadBindings(new SdlBindingsContext());
+
         _uvProgram = new(
-            Path.Combine(EngineData.RootDirectory, "Data", "shaders"),
+            Path.Combine(QData.RootDirectory, "Data", "shaders"),
             "test"
         );
-        QuadVbo quadVbo = new();
-        var quadVai = new QuadVai();
-        _quadVao = new(quadVai, _uvProgram, quadVbo);
-
-        Console.WriteLine("Create Test Object");
+        QuadVbo cubeVbo = new();
+        _cubeVao = new(
+        [
+            new VertexAttributeInfo("in_position", 2, typeof(float)),
+            // new VertexAttributeInfo("in_normal", 3, typeof(float)),
+            // new VertexAttributeInfo("in_texCoord", 2, typeof(float))
+        ], _uvProgram, cubeVbo);
     }
 
     [QTracer<QObject<QMeta>>(TraceType.Callback)]
@@ -48,25 +51,35 @@ public class Test : QObject<QMeta>
     public override void Update()
     {
         _uvProgram.Use(true);
-        Vector2 res = Window.Roster["Main"].QMeta.GlData.Resolution;
-        Console.WriteLine(res);
-        _uvProgram.SetUniform(GL.Uniform2, "u_resolution", res);
-        float[] uRes = [0, 0];
-        _uvProgram.GetUniform("u_resolution", uRes);
-        Console.WriteLine($"{uRes[0]}, {uRes[1]}");
+        _uvProgram.SetUniform(
+            GL.Uniform2, "u_resolution", Window.Roster["Main"].QMeta.GlData.Resolution
+        );
+
+        // Vector3 cameraPosition = new Vector3(0.0f, 1.0f, 0.0f);
+        // Vector3 targetPosition = new Vector3(0.0f, 0.0f, 0.0f);
+        // Vector3 upVector = new Vector3(0.0f, 1.0f, 0.0f);
+        //
+        // Matrix4 viewMatrix = Matrix4.LookAt(cameraPosition, targetPosition, upVector);
+        //
+        // float fieldOfView = MathHelper.PiOver4;
+        // float aspectRatio = 16.0f / 9.0f;
+        // float nearPlane = 0.1f;
+        // float farPlane = 100.0f;
+        //
+        // Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearPlane, farPlane);
+
+        // _uvProgram.SetUniform(
+        //     GL.UniformMatrix4, "u_viewMatrix", false, ref viewMatrix
+        // );
+        // _uvProgram.SetUniform(
+        //     GL.UniformMatrix4, "u_projectionMatrix", false, ref projectionMatrix
+        // );
+        
         _uvProgram.Use(false);
     }
 
     public override void Render()
     {
-        _quadVao.Draw();
-    }
-}
-
-class QuadVai : VertexAttributesInfo
-{
-    public QuadVai()
-    {
-        Add(attr: new("in_position", 3, Float));
+        _cubeVao.Draw();
     }
 }

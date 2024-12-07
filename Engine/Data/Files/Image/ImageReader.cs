@@ -4,7 +4,7 @@ public class ImageReader : Reader
 {
     public ImgData ImageData;
 
-    public ImageReader(string imagePath) : base(EngineData.RootDirectory)
+    public ImageReader(string imagePath) : base(QData.RootDirectory)
     {
         using (var stream = ReadStream(imagePath))
         {

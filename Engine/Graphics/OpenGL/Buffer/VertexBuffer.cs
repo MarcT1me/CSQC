@@ -1,40 +1,43 @@
 namespace Engine.Graphics.OpenGL.Buffer;
 
-
-public abstract class VertexBuffer<T> : Buffer<T> where T : struct
+public abstract class VertexBuffer : Buffer
 {
-    public int indecesCount = 0;
-    
-    protected T[] ConnectVertexData(T[] vertices, int[] indices)
+    public int indicesCount = 0;
+
+    protected object[] ConnectVertexData(object[] vertices, int size, int[] indices)
     {
-        List<T> data = new();
+        List<object> data = new();
         foreach (int ind in indices)
         {
-            data.Add(vertices[ind * 3]);
-            data.Add(vertices[ind * 3 + 1]);
-            data.Add(vertices[ind * 3 + 2]);
+            for (int j = 0; j < size; j++)
+                data.Add(vertices[ind * size + j]);
         }
 
         return data.ToArray();
     }
 
-    protected T[] CombineData(T[] data1, int len1, T[] data2, int len2)
+    protected object[] CombineData(object[] data1, int len1, object[] data2, int len2)
     {
-        List<T> data = new();
+        List<object> data = new List<object>();
 
-        for (int i = 0; i < data1.Length / 9; i++)
+        int index1 = 0;
+        int index2 = 0;
+
+        while (index1 < data1.Length || index2 < data2.Length)
         {
-            // data1
-            for (int j = 0; j < len1; j++)
-                data.Add(data1[i * len1 + j]);
+            for (int j = 0; j < len1 && index1 < data1.Length; j++)
+            {
+                data.Add(data1[index1++]);
+            }
 
-            // data2
-            for (int j = 0; j < len2; j++)
-                data.Add(data2[i * len2 + j]);
+            for (int j = 0; j < len2 && index2 < data2.Length; j++)
+            {
+                data.Add(data2[index2++]);
+            }
         }
 
         return data.ToArray();
     }
 
-    protected abstract T[] GetVertexData();
+    protected abstract object[] GetVertexData();
 }

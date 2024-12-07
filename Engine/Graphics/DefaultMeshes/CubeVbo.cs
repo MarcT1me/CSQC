@@ -2,7 +2,7 @@ using Engine.Graphics.OpenGL.Buffer;
 
 namespace Engine.Graphics.DefaultMeshes;
 
-public class CubeVbo : VertexBuffer<int>
+public class CubeVbo : VertexBuffer
 {
     public CubeVbo()
     {
@@ -10,12 +10,12 @@ public class CubeVbo : VertexBuffer<int>
         TransferData();
     }
 
-    protected sealed override int[] GetVertexData()
+    protected sealed override object[] GetVertexData()
     {
-        int[] data;
-
-        int[] vertices =
-        {
+        object[] data;
+        
+        object[] vertices =
+        [
             -1, -1, 1,
             1, -1, 1,
             1, 1, 1,
@@ -24,9 +24,9 @@ public class CubeVbo : VertexBuffer<int>
             -1, -1, -1,
             1, -1, -1,
             1, 1, -1
-        };
+        ];
         int[] indices =
-        {
+        [
             0, 2, 3,
             0, 1, 2,
             1, 7, 2,
@@ -39,46 +39,36 @@ public class CubeVbo : VertexBuffer<int>
             3, 2, 7,
             0, 6, 1,
             0, 5, 6
-        };
-        data = ConnectVertexData(vertices, indices);
+        ];
+       var vertexData = ConnectVertexData(vertices, 3, indices);
 
-        int[] texCoord =
-        {
-            0, 0, 0,
-            1, 0, 0,
-            1, 1, 0,
-            0, 1, 0
-        };
-        int[] texCoordIndices =
-        {
-            0, 2, 3,
-            0, 1, 2,
-            0, 2, 3,
-            0, 1, 2,
-            0, 1, 2,
-            2, 3, 0,
-            2, 3, 0,
-            2, 0, 1,
-            0, 2, 3,
-            0, 1, 2,
-            3, 1, 2,
-            3, 0, 1
-        };
-        int[] texCoordData = ConnectVertexData(texCoord, texCoordIndices);
-
-        int[] normals =
-        {
+        object[] normals =
+        [
             0, 0, 1,
             1, 0, 0,
             0, 0, -1,
             -1, 0, 0,
             0, 1, 0,
             0, -1, 0
-        };
+        ];
 
-        data = CombineData(normals, 3, data, 9);
-        data = CombineData(texCoordData, 9, data, 12);
+        object[] texCoord =
+        [
+            -1, -1,
+            1, -1,
+            1, 1,
+            -1, 1
+        ];
+        int[] texCoordIndices =
+        [
+            0, 2, 3,
+            0, 1, 2
+        ];
+        var texCoordData = ConnectVertexData(texCoord, 2, texCoordIndices);
 
-        return data.ToArray();
+        data = CombineData(vertexData.ToArray(), 9, normals, 3);
+        data = CombineData(data, 12, texCoordData.ToArray(), 6);
+
+        return vertexData;
     }
 }

@@ -16,11 +16,11 @@ internal abstract class Program
         // Hard loading of dependencies (publish)
         NativeLibrary.Load(Path.Combine(relativePath, "glfw3.dll"));
         NativeLibrary.Load(Path.Combine(relativePath, "SDL2.dll"));
-
+        
         Assembly engineLib = Assembly.Load("Engine"); // load Engine
         Assembly appLib = Assembly.Load("AppLib"); // load App
         // set App in the Engine variables
-        Type engineDataType = engineLib.GetType("Engine.Data.EngineData")!;
+        Type engineDataType = engineLib.GetType("Engine.Data.QData")!;
         engineDataType.GetField("RootDirectory")?.SetValue(null, AppDomain.CurrentDomain.BaseDirectory);
         engineDataType.GetField("AppLibAssembly")?.SetValue(null, appLib);
         engineDataType.GetField("AppName")?.SetValue(null, AppDomain.CurrentDomain.FriendlyName);

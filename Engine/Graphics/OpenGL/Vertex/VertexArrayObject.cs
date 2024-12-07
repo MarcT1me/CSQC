@@ -4,25 +4,34 @@ using Engine.Graphics.OpenGL.Shaders;
 
 namespace Engine.Graphics.OpenGL.Vertex;
 
-public class VertexArrayObject<T> where T : struct
+public class VertexArrayObject
 {
     // data of VAO
     protected readonly int VaoPtr;
     protected readonly ShaderProgram Program;
-    protected readonly VertexBuffer<T> Buffer;
+    protected readonly VertexBuffer Buffer;
 
-    protected static readonly Dictionary<Type, VertexAttribPointerType> Types = new()
+    protected static readonly Dictionary<Type, VertexAttribPointerType> GLTypes = new()
     {
         { typeof(float), VertexAttribPointerType.Float },
         { typeof(double), VertexAttribPointerType.Double },
         { typeof(int), VertexAttribPointerType.Int },
         { typeof(uint), VertexAttribPointerType.UnsignedInt },
-        { typeof(byte), VertexAttribPointerType.Byte },
+        { typeof(byte), VertexAttribPointerType.Byte }
     };
 
-    public VertexAttributesInfo Attrs;
+    protected static readonly Dictionary<Type, int> TypeSizes = new()
+    {
+        { typeof(float), sizeof(float) },
+        { typeof(double), sizeof(double) },
+        { typeof(int), sizeof(int) },
+        { typeof(uint), sizeof(uint) },
+        { typeof(byte), 1 }
+    };
 
-    public VertexArrayObject(VertexAttributesInfo attrs, ShaderProgram program, VertexBuffer<T> buffer)
+    public VertexAttributeInfo[] Attrs;
+
+    public VertexArrayObject(VertexAttributeInfo[] attrs, ShaderProgram program, VertexBuffer buffer)
     {
         Attrs = attrs;
         Program = program;
@@ -60,7 +69,7 @@ public class VertexArrayObject<T> where T : struct
         Bind();
 
         int offset = 0;
-        foreach (VertexAttributeInfo attr in Attrs.Attributes)
+        foreach (VertexAttributeInfo attr in Attrs)
         {
             int index = GL.GetAttribLocation(Program.ProgramPtr, attr.Name);
             if (index == -1)
@@ -68,13 +77,15 @@ public class VertexArrayObject<T> where T : struct
                 Console.WriteLine($"Error: Attribute '{attr.Name}' not found in shader program.");
                 return;
             }
-            
-            GL.VertexAttribPointer(index, attr.Count, Types[typeof(T)], false, attr.Count * attr.TypeSize, offset);
+
+            GL.VertexAttribPointer(
+                index, attr.Count, GLTypes[attr.Type], false, attr.Count * TypeSizes[attr.Type], offset
+            );
             GlCheckError($"Invalid attribute {attr.Name}");
             GL.EnableVertexAttribArray(index);
             GlCheckError($"Error enable attribute {attr.Name}");
 
-            offset += attr.Count * attr.TypeSize;
+            offset += attr.Count * TypeSizes[attr.Type];
         }
 
         Unbind();
@@ -84,7 +95,7 @@ public class VertexArrayObject<T> where T : struct
     {
         Program.Use(true);
         Bind();
-        GL.DrawArrays(PrimitiveType.Triangles, 0, Buffer.indecesCount);
+        GL.DrawArrays(PrimitiveType.Triangles, 0, Buffer.indicesCount);
         Unbind();
         Program.Use(false);
     }

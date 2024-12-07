@@ -55,7 +55,7 @@ public sealed class QTracerAttribute<T>(TraceType traceType) : Attribute where T
 
     public static void HandleInstances()
     {
-        var types = EngineData.AppLibAssembly.GetTypes(); // get all classes
+        var types = QData.AppLibAssembly.GetTypes(); // get all classes
 
         foreach (var @class in types)
         {

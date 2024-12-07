@@ -32,7 +32,7 @@ public static class OpenGl
 
     public static void SetGl(GlData glData)
     {
-        GL.Enable(EnableCap.DepthTest | EnableCap.Blend | EnableCap.CullFace);
+        GL.Enable(EnableCap.DepthTest | EnableCap.Blend);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         GL.DepthFunc(DepthFunction.Lequal);
         SetViewport(glData);
