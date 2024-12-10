@@ -23,14 +23,14 @@ public class Game : App
         new("Main", new WinData
         {
             Title = "Main Window",
-            Size = new(800, 600)
+            Size = new(800, 600),
+            Flags = SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE
         }, new GlData
         {
             ClearColor = new Vector4(0.1f, 0.5f, 0.4f, 1f)
         })
     )
     {
-        GL.LoadBindings(new SdlBindingsContext());
         _test = new();
     }
 
@@ -71,5 +71,11 @@ public class Game : App
         _mainWindow.Render();
         _test.Render();
         _mainWindow.SwapBuffers();
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        _test.Dispose();
     }
 }

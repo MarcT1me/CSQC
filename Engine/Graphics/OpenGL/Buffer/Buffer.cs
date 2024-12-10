@@ -1,22 +1,34 @@
-﻿using System.Runtime.InteropServices;
-using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Graphics.OpenGL;
 
 namespace Engine.Graphics.OpenGL.Buffer;
 
 public abstract class Buffer
 {
-    private readonly int _bufferPtr;
-    protected object[] Data;
+    private readonly int _bufferPtr = GL.GenBuffer();
+    protected float[] Data = [];
+    public float[] GetData() => Data;
 
-    protected Buffer()
-    {
-        Data = [];
-        _bufferPtr = GL.GenBuffer();
-    }
+    /* indev */
+    // private readonly Dictionary<TypeCode, Func<IConvertible, byte[]>> _typeCodeToBytes = new()
+    // {
+    //     // integers
+    //     { TypeCode.Byte, b => [b.ToByte(null)] },
+    //     { TypeCode.Int16, i => BitConverter.GetBytes(i.ToInt16(null)) },
+    //     { TypeCode.Int32, i => BitConverter.GetBytes(i.ToInt32(null)) },
+    //     { TypeCode.Int64, i => BitConverter.GetBytes(i.ToInt64(null)) },
+    //     // unsigned integers
+    //     { TypeCode.UInt16, u => BitConverter.GetBytes(u.ToUInt16(null)) },
+    //     { TypeCode.UInt32, u => BitConverter.GetBytes(u.ToUInt32(null)) },
+    //     { TypeCode.UInt64, u => BitConverter.GetBytes(u.ToUInt64(null)) },
+    //     // floating point
+    //     { TypeCode.Single, f => BitConverter.GetBytes(f.ToSingle(null)) },
+    //     { TypeCode.Double, f => BitConverter.GetBytes(f.ToDouble(null)) }
+    // };
 
     public void Bind()
     {
         GL.BindBuffer(BufferTarget.ArrayBuffer, _bufferPtr);
+        OpenGl.GlCheckError("Error Binding Buffer");
     }
 
     public void Unbind()
@@ -24,43 +36,46 @@ public abstract class Buffer
         GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
     }
 
-    public void Dispose()
-    {
-        GL.DeleteBuffer(_bufferPtr);
-    }
-
     protected void TransferData()
     {
-        List<byte> byteList = new();
-
-        foreach (object obj in Data)
-        {
-            int size = Marshal.SizeOf(obj.GetType());
-
-            List<byte> buffer = new();
-            if (obj is float f)
-                buffer.AddRange(BitConverter.GetBytes(f));
-            if (obj is double d)
-                buffer.AddRange(BitConverter.GetBytes(d));
-            else if (obj is int i)
-                buffer.AddRange(BitConverter.GetBytes(i));
-            else if (obj is uint u)
-                buffer.AddRange(BitConverter.GetBytes(u));
-            else
-                throw new ArgumentException("Unsupported data type in Data array.");
-
-            byteList.AddRange(buffer);
-        }
+        /* indev */
+        // List<byte> byteList = new();
+        //
+        // foreach (var obj in Data)
+        // {
+        //     if (obj is IConvertible convertible)
+        //     {
+        //         if (_typeCodeToBytes.TryGetValue(convertible.GetTypeCode(), out var converter))
+        //         {
+        //             var bytes = converter(convertible);
+        //             if (BitConverter.IsLittleEndian)
+        //                 Array.Reverse(bytes);
+        //             byteList.AddRange(bytes);
+        //         }
+        //         else
+        //         {
+        //             throw new ArgumentException($"Unsupported data type: {obj.GetType()}");
+        //         }
+        //     }
+        //     else
+        //     {
+        //         throw new ArgumentException($"Object is not IConvertible: {obj.GetType()}");
+        //     }
+        // }
 
         Bind();
         GL.BufferData(
-            BufferTarget.ArrayBuffer, (IntPtr)byteList.Count, byteList.ToArray(), BufferUsageHint.StaticDraw
+            BufferTarget.ArrayBuffer,
+            Data.Length, // (IntPtr)byteList.Count, 
+            Data, // byteList.ToArray(), 
+            BufferUsageHint.StaticDraw
         );
+        OpenGl.GlCheckError("Error Transfer Data");
         Unbind();
     }
 
-    public object[] GetData()
+    public void Dispose()
     {
-        return Data;
+        GL.DeleteBuffer(_bufferPtr);
     }
 }

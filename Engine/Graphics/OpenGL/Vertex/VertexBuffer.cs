@@ -1,12 +1,12 @@
-namespace Engine.Graphics.OpenGL.Buffer;
+namespace Engine.Graphics.OpenGL.Vertex;
 
-public abstract class VertexBuffer : Buffer
+public abstract class VertexBuffer : Buffer.Buffer
 {
-    public int indicesCount = 0;
+    public int IndicesCount = 0;
 
-    protected object[] ConnectVertexData(object[] vertices, int size, int[] indices)
+    protected float[] ConnectVertexData(float[] vertices, int size, int[] indices)
     {
-        List<object> data = new();
+        List<float> data = new();
         foreach (int ind in indices)
         {
             for (int j = 0; j < size; j++)
@@ -16,9 +16,9 @@ public abstract class VertexBuffer : Buffer
         return data.ToArray();
     }
 
-    protected object[] CombineData(object[] data1, int len1, object[] data2, int len2)
+    protected float[] CombineData(float[] data1, int len1, float[] data2, int len2)
     {
-        List<object> data = new List<object>();
+        List<float> data = new();
 
         int index1 = 0;
         int index2 = 0;
@@ -39,5 +39,5 @@ public abstract class VertexBuffer : Buffer
         return data.ToArray();
     }
 
-    protected abstract object[] GetVertexData();
+    protected abstract float[] GetVertexData();
 }

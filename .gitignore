@@ -3,7 +3,7 @@
 .vs
 *.iml
 # test files
-*_test_*.*
+*_test_*
 .venv
 
 ### Archives

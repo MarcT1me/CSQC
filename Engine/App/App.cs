@@ -33,6 +33,7 @@ public abstract class App : QObject<QMeta>
 
     protected App(Window mainWindow)
     {
+        GL.LoadBindings(new SdlBindingsContext());
         PreInit();
         _mainWindow = mainWindow;
     }
@@ -100,7 +101,6 @@ public abstract class App : QObject<QMeta>
     public static void Mainloop<T>() where T : App
     {
         QTracerAttribute<QObject<QMeta>>.HandleInstances();
-        QTracerAttribute<VertexAttributesList>.HandleInstances();
 
         T? app = null;
         while (Running)

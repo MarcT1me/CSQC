@@ -7,8 +7,8 @@ using Engine.Graphics.Window;
 using Engine.Objects;
 using Engine.Objects.Tracer;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Mathematics;
-using Engine.App;
+using Engine.Graphics.OpenGL;
+using Engine.Graphics.OpenGL.Buffer;
 
 namespace AppLib.Test;
 
@@ -17,23 +17,23 @@ public class Test : QObject<QMeta>
     private static int _some;
 
     private readonly ShaderProgram _uvProgram;
-    private readonly VertexArrayObject _cubeVao;
+    private readonly VertexArrayObject _quadVao;
 
     public Test()
     {
-        GL.LoadBindings(new SdlBindingsContext());
-
         _uvProgram = new(
             Path.Combine(QData.RootDirectory, "Data", "shaders"),
             "test"
         );
-        QuadVbo cubeVbo = new();
-        _cubeVao = new(
+        QuadVbo quadVbo = new();
+        _quadVao = new(
         [
-            new VertexAttributeInfo("in_position", 2, typeof(float)),
+            new VertexAttributeInfo("in_position", 3, typeof(float))
+            /* indev */
             // new VertexAttributeInfo("in_normal", 3, typeof(float)),
             // new VertexAttributeInfo("in_texCoord", 2, typeof(float))
-        ], _uvProgram, cubeVbo);
+        ], _uvProgram, quadVbo);
+        OpenGl.GlCheckError("Error Test initialize");
     }
 
     [QTracer<QObject<QMeta>>(TraceType.Callback)]
@@ -50,11 +50,16 @@ public class Test : QObject<QMeta>
 
     public override void Update()
     {
-        _uvProgram.Use(true);
+        _uvProgram.Use();
         _uvProgram.SetUniform(
             GL.Uniform2, "u_resolution", Window.Roster["Main"].QMeta.GlData.Resolution
         );
+        
+        int[] v = [0, 0];
+        _uvProgram.GetUniform("u_resolution", v);
+        Console.WriteLine("U_res: vec2(" + v[0] + ", " + v[1] + ")");
 
+        /* indev */
         // Vector3 cameraPosition = new Vector3(0.0f, 1.0f, 0.0f);
         // Vector3 targetPosition = new Vector3(0.0f, 0.0f, 0.0f);
         // Vector3 upVector = new Vector3(0.0f, 1.0f, 0.0f);
@@ -75,11 +80,17 @@ public class Test : QObject<QMeta>
         //     GL.UniformMatrix4, "u_projectionMatrix", false, ref projectionMatrix
         // );
         
-        _uvProgram.Use(false);
+        _uvProgram.Unuse();
     }
 
     public override void Render()
     {
-        _cubeVao.Draw();
+        _quadVao.Draw();
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        _quadVao.Dispose();
     }
 }

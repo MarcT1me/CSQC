@@ -23,7 +23,7 @@ public class FontRenderer
 
     public void Begin()
     {
-        _rendererShader.Use(true);
+        _rendererShader.Use();
         // screen projection
         _rendererShader.SetUniform(GL.UniformMatrix4, "projection", false, ref _screenProjection);
     }
@@ -60,12 +60,12 @@ public class FontRenderer
 
         _rendererShader.SetUniform(GL.Uniform4, "textColor", Objects.Font.Font.List[name].Color);
         Objects.Font.Font.Fonts[data.Font].Render(name);
-        _rendererShader.Use(true);
+        _rendererShader.Use();
     }
 
     public void Finish()
     {
-        _rendererShader.Use(false);
+        _rendererShader.Unuse();
     }
 
     public void Dispose()

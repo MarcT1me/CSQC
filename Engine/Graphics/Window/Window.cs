@@ -1,8 +1,10 @@
 using Engine.Event;
 using Engine.Graphics.OpenGL;
 using Engine.Objects;
+using Engine.Time;
 using SDL2;
 using OpenTK.Graphics.OpenGL;
+using Timer = Engine.Time.Timer;
 
 namespace Engine.Graphics.Window;
 
@@ -90,6 +92,9 @@ public class Window : QObject<WinMeta>
         DeleteContext();
         _window = IntPtr.Zero;
     }
+
+    private void Dispose(object sender, TimerEventArgs e) => Dispose();
+    
 
     public override void HandleEvent(SdlEventArgs e)
     {

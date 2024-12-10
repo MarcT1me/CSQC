@@ -32,15 +32,36 @@ public static class OpenGl
 
     public static void SetGl(GlData glData)
     {
-        GL.Enable(EnableCap.DepthTest | EnableCap.Blend);
-        GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+        foreach (EnableCap cap in GlData.EnableCaps)
+        {
+            GL.Enable(EnableCap.CullFace);
+            GlCheckError($"Error GL.Enable {Enum.GetName(cap)}");
+        }
+        
         GL.DepthFunc(DepthFunction.Lequal);
+        GlCheckError("Error GL.DepthFunc");
+        GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+        GlCheckError("Error GL.BlendFunc");
+        
         SetViewport(glData);
+        GlCheckError("Error GL.Viewport");
+        
         GL.ClearColor(glData.ClearColor.X, glData.ClearColor.Y, glData.ClearColor.Z, glData.ClearColor.W);
+        GlCheckError("Error GL.ClearColor");
     }
 
     public static void SetViewport(GlData glData)
     {
         GL.Viewport(glData.Position.X, glData.Position.Y, glData.Resolution.X, glData.Resolution.Y);
+    }
+    
+    public static void GlCheckError(string caption = "null")
+    {
+        ErrorCode error = GL.GetError();
+        if (error != ErrorCode.NoError)
+        {
+            // Handle or log the error
+            Console.WriteLine($"OpenGL Error: {caption}\n\t\t| {error}");
+        }
     }
 }

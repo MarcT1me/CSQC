@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using System.Runtime.InteropServices;
+using OpenTK.Graphics.OpenGL;
 using Engine.Graphics.OpenGL.Buffer;
 using Engine.Graphics.OpenGL.Shaders;
 
@@ -11,23 +12,15 @@ public class VertexArrayObject
     protected readonly ShaderProgram Program;
     protected readonly VertexBuffer Buffer;
 
-    protected static readonly Dictionary<Type, VertexAttribPointerType> GLTypes = new()
-    {
-        { typeof(float), VertexAttribPointerType.Float },
-        { typeof(double), VertexAttribPointerType.Double },
-        { typeof(int), VertexAttribPointerType.Int },
-        { typeof(uint), VertexAttribPointerType.UnsignedInt },
-        { typeof(byte), VertexAttribPointerType.Byte }
-    };
-
-    protected static readonly Dictionary<Type, int> TypeSizes = new()
-    {
-        { typeof(float), sizeof(float) },
-        { typeof(double), sizeof(double) },
-        { typeof(int), sizeof(int) },
-        { typeof(uint), sizeof(uint) },
-        { typeof(byte), 1 }
-    };
+    /* indev */
+    // protected static readonly Dictionary<Type, VertexAttribPointerType> GlTypes = new()
+    // {
+    //     { typeof(float), VertexAttribPointerType.Float },
+    //     { typeof(double), VertexAttribPointerType.Double },
+    //     { typeof(int), VertexAttribPointerType.Int },
+    //     { typeof(uint), VertexAttribPointerType.UnsignedInt },
+    //     { typeof(byte), VertexAttribPointerType.Byte }
+    // };
 
     public VertexAttributeInfo[] Attrs;
 
@@ -37,24 +30,15 @@ public class VertexArrayObject
         Program = program;
         Buffer = buffer;
         VaoPtr = GL.GenVertexArray();
-        GlCheckError();
+        OpenGl.GlCheckError("Error creating OpenGL vertex array");
 
         SetupVertexAttributes();
-    }
-
-    private void GlCheckError(string caption = "null")
-    {
-        ErrorCode error = GL.GetError();
-        if (error != ErrorCode.NoError)
-        {
-            // Handle or log the error
-            Console.WriteLine($"OpenGL Error: {error} - {caption}");
-        }
     }
 
     public void Bind()
     {
         GL.BindVertexArray(VaoPtr);
+        OpenGl.GlCheckError("Error Binding OpenGL vertex array");
         Buffer.Bind();
     }
 
@@ -78,14 +62,21 @@ public class VertexArrayObject
                 return;
             }
 
+            // int size = attr.Count * Marshal.SizeOf(attr.Type);
+            
             GL.VertexAttribPointer(
-                index, attr.Count, GLTypes[attr.Type], false, attr.Count * TypeSizes[attr.Type], offset
+                index: index,
+                size: attr.Count,
+                type: VertexAttribPointerType.Float, // GlTypes[attr.Type],
+                normalized: false,
+                stride: attr.Count * 4,
+                offset: offset
             );
-            GlCheckError($"Invalid attribute {attr.Name}");
+            OpenGl.GlCheckError($"Invalid attribute {attr.Name}");
             GL.EnableVertexAttribArray(index);
-            GlCheckError($"Error enable attribute {attr.Name}");
+            OpenGl.GlCheckError($"Error enable attribute {attr.Name}");
 
-            offset += attr.Count * TypeSizes[attr.Type];
+            offset += attr.Count * 4;
         }
 
         Unbind();
@@ -93,14 +84,15 @@ public class VertexArrayObject
 
     public void Draw()
     {
-        Program.Use(true);
+        Program.Use();
         Bind();
-        GL.DrawArrays(PrimitiveType.Triangles, 0, Buffer.indicesCount);
+        GL.DrawArrays(PrimitiveType.Triangles, 0, Buffer.IndicesCount);
+        OpenGl.GlCheckError("Error Draw");
         Unbind();
-        Program.Use(false);
+        Program.Unuse();
     }
 
-    void Dispose()
+    public void Dispose()
     {
         GL.DeleteVertexArray(VaoPtr);
         Buffer.Dispose();

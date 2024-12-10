@@ -1,9 +1,10 @@
 ﻿#version 330 core
 
+/* indev */
 //in vec3 normal;
 //in vec2 texCoord;
 
-uniform vec2 u_resolution;
+uniform ivec2 u_resolution;
 
 void main() {
     vec2 uv = gl_FragCoord.xy / u_resolution;

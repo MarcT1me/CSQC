@@ -7,22 +7,20 @@ public class TimerEventArgs : EventArgs
     public bool Success;
 }
 
-public class Timer(double duration, TimerMode mode)
+public class Timer(double duration, TimerMode mode, string name)
 {
-    public static Dictionary<int, Timer> List { get; } = new();
+    public static Dictionary<string, Timer> List { get; } = new();
 
-    public double Duration = duration;
     public double RemainingTime = duration;
     public double StartTime = Clock.CurrentTime;
-    public TimerMode Mode = mode;
     public event TimerEventHandler? OnEvent;
     public bool Running;
 
     public void Start()
     {
-        List.TryAdd(GetHashCode(), this);
+        List.TryAdd(name, this);
         StartTime = Clock.CurrentTime;
-        RemainingTime = Duration;
+        RemainingTime = duration;
         Running = true;
     }
 
@@ -35,24 +33,24 @@ public class Timer(double duration, TimerMode mode)
         if (Running)
         {
             bool condition;
-            if (Mode.HasFlag(TimerMode.Relative) || Mode.HasFlag(TimerMode.Default))
+            if (mode.HasFlag(TimerMode.Relative) || mode.HasFlag(TimerMode.Default))
                 condition = RemainingTime <= 0;
-            else if (Mode.HasFlag(TimerMode.Absolute))
+            else if (mode.HasFlag(TimerMode.Absolute))
                 condition =
-                    Clock.CurrentTime - Clock.DeltaTime <= StartTime + Duration + RemainingTime &&
-                    Clock.CurrentTime + Clock.DeltaTime >= StartTime + Duration + RemainingTime;
+                    Clock.CurrentTime - Clock.DeltaTime <= StartTime + duration + RemainingTime &&
+                    Clock.CurrentTime + Clock.DeltaTime >= StartTime + duration + RemainingTime;
             else condition = false;
 
             if (condition)
             {
                 Stop();
-                if (Mode.HasFlag(TimerMode.Causing))
+                if (mode.HasFlag(TimerMode.Causing))
                     OnEvent?.Invoke(this, new TimerEventArgs { Success = true });
-                if (Mode.HasFlag(TimerMode.Finite) || Mode.HasFlag(TimerMode.Default))
+                if (mode.HasFlag(TimerMode.Finite) || mode.HasFlag(TimerMode.Default))
                 {
-                    List.Remove(GetHashCode());
+                    List.Remove(name);
                 }
-                else if (Mode.HasFlag(TimerMode.Cyclical))
+                else if (mode.HasFlag(TimerMode.Cyclical))
                 {
                     Start();
                 }

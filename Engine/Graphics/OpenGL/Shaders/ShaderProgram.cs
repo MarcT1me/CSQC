@@ -48,15 +48,17 @@ public class ShaderProgram
         GL.UseProgram(ProgramPtr);
     }
 
-    public void Use(bool use)
+    public void Unuse()
     {
-        GL.UseProgram(use ? ProgramPtr : 0);
+        GL.UseProgram(0);
     }
 
     public void SetUniform<T>(UniformSetter<T> setter, string uName, T uValue) where T : struct
     {
         var loc = GL.GetUniformLocation(ProgramPtr, uName);
+        OpenGl.GlCheckError("Error GL.GetUniformLocation");
         setter(loc, uValue);
+        OpenGl.GlCheckError("Error using UniformSetter<T>");
     }
 
     public void SetUniform<T>(UniformMSetter<T> setter, string uName, bool transpose, ref T uValue) where T : struct
