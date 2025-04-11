@@ -1,5 +1,5 @@
 ﻿namespace Engine.Data.Files.Image;
-
+    
 public class ImageReader : Reader
 {
     public ImgData ImageData;

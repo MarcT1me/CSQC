@@ -12,6 +12,8 @@ namespace AppLib;
 public class Game : App
 {
     private Test.Test _test;
+    private Test.Test _test2;
+    private Window _secondWin;
 
     protected override void PreInit()
     {
@@ -32,14 +34,28 @@ public class Game : App
     {
         GL.LoadBindings(new SdlBindingsContext());
         _test = new();
+        _secondWin = new("Second", new WinData
+            {
+                Title = "Second Window",
+                Size = new(800, 600)
+            }, new GlData
+            {
+                ClearColor = new Vector4(0.0f, 1.0f, 0.0f, 1f)
+            }
+        );
+        _test2 = new();
     }
 
     protected override void PostInit()
     {
         base.PostInit();
         _mainWindow.SetCurrent();
-        _test.Update();
         _mainWindow.Show();
+        _test.Update();
+        
+        _secondWin.SetCurrent();
+        _secondWin.Show();
+        _test2.Update();
     }
 
     public override void HandleEvent(SdlEventArgs e)
@@ -71,5 +87,9 @@ public class Game : App
         _mainWindow.Render();
         _test.Render();
         _mainWindow.SwapBuffers();
+        
+        _secondWin.Render();
+        _test2.Render();
+        _secondWin.SwapBuffers();
     }
 }
